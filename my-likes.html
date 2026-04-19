@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的点赞</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f7fb;
+        --surface: #ffffff;
+        --surface-muted: #eef3f8;
+        --text: #142033;
+        --muted: #6d7a8c;
+        --brand: #ff7a00;
+        --brand-deep: #ff5a1f;
+        --line: #d7e0ec;
+        --shadow: 0 18px 40px rgba(23, 35, 61, 0.08);
+        --radius-lg: 24px;
+        --radius-md: 18px;
+        --radius-sm: 14px;
+        --wrap: 1280px;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(255, 122, 0, 0.14), transparent 26%),
+          linear-gradient(180deg, #fbfdff, var(--bg) 22%, #eef3f9 100%);
+      }
+      a { color: inherit; text-decoration: none; }
+      button, input { font: inherit; }
+      .container { width: min(var(--wrap), calc(100% - 32px)); margin: 0 auto; }
+      .topbar { position: sticky; top: 0; z-index: 60; backdrop-filter: blur(14px); background: rgba(255,255,255,.8); border-bottom: 1px solid rgba(215,224,236,.85); }
+      .topbar-inner { display:flex; align-items:center; gap:20px; padding:18px 0; }
+      .logo { display:flex; align-items:center; gap:12px; min-width:220px; }
+      .logo-mark { width:46px; height:46px; border-radius:16px; display:grid; place-items:center; background:linear-gradient(135deg, var(--brand), var(--brand-deep)); color:#fff; font-size:1.5rem; font-weight:800; }
+      .logo-text { display:grid; gap:2px; }
+      .logo-text strong { font-size:1.05rem; }
+      .logo-text span { color:var(--muted); font-size:.92rem; }
+      .searchbox { position:relative; flex:1; z-index:80; }
+      .searchbar { display:flex; align-items:center; gap:12px; min-height:52px; padding:0 18px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.92); box-shadow:var(--shadow); }
+      .search-icon { width:20px; height:20px; color:#1f2a44; flex:0 0 auto; }
+      .searchbar input { flex:1; border:0; outline:0; background:transparent; color:var(--text); font-size:1rem; }
+      .search-submit { min-width:86px; min-height:40px; border:0; border-radius:999px; background:linear-gradient(135deg, var(--brand), var(--brand-deep)); color:#fff; font-weight:700; cursor:pointer; }
+      .search-dropdown {
+        position:absolute; top:calc(100% + 10px); left:0; right:0; padding:18px; display:none; border:1px solid var(--line);
+        border-radius:26px; background:rgba(255,255,255,.98); box-shadow:var(--shadow); z-index:90;
+      }
+      .searchbox.open .search-dropdown { display:block; }
+      .search-head, .hot-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+      .history-clear {
+        width:32px; height:32px; border:0; border-radius:999px; background:#fff4ea; color:var(--brand); display:grid; place-items:center; cursor:pointer;
+      }
+      .history-icon { width:16px; height:16px; }
+      .history-list { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+      .history-item { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:48px; padding:0 12px; border-radius:16px; background:var(--surface-muted); cursor:pointer; }
+      .history-item:hover { background:#e7edf6; box-shadow: inset 0 0 0 1px rgba(255,122,0,.12); }
+      .history-label { display:flex; align-items:center; gap:8px; min-width:0; color:#39465d; font-weight:600; }
+      .history-label span:last-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .history-delete { width:28px; height:28px; border:0; border-radius:999px; background:#dce5f0; color:#516076; cursor:pointer; }
+      .history-delete:hover { background:#cdd8e7; }
+      .hot-search { margin-top:18px; padding-top:18px; border-top:1px solid var(--line); }
+      .hot-tags { display:flex; flex-wrap:wrap; gap:10px; }
+      .hot-tag { display:inline-flex; align-items:center; gap:8px; padding:9px 12px; border-radius:999px; background:#fff4ea; color:#a25100; font-size:.86rem; font-weight:700; cursor:pointer; }
+      .hot-tag:hover { background:#ffe6cf; transform:translateY(-1px); box-shadow: inset 0 0 0 1px rgba(255,122,0,.18); }
+      .hot-rank { width:20px; height:20px; border-radius:999px; display:grid; place-items:center; background:rgba(255,122,0,.14); font-size:.74rem; }
+      .account-actions { position:relative; display:flex; align-items:center; gap:12px; }
+      .btn { display:inline-flex; align-items:center; justify-content:center; min-width:96px; min-height:46px; padding:0 18px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.7); font-weight:700; cursor:pointer; }
+      .account-trigger { gap:8px; }
+      .account-menu { position:absolute; top:calc(100% + 10px); right:0; min-width:168px; padding:8px; display:none; flex-direction:column; gap:6px; border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.98); box-shadow:var(--shadow); z-index:40; }
+      .account-actions.open .account-menu { display:flex; }
+      .account-menu-item { display:flex; align-items:center; min-height:42px; padding:0 14px; border-radius:12px; color:var(--muted); font-size:.92rem; font-weight:600; }
+      .account-menu-item:hover { background:var(--surface-muted); color:var(--text); }
+      .account-menu-item-danger { color:#d14343; }
+      .account-menu-item-danger:hover { background:rgba(209,67,67,.08); color:#bf2f2f; }
+      body.modal-open { overflow:hidden; }
+      body.requirements-open { overflow: hidden; }
+      .auth-modal-root { position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:24px; z-index:160; }
+      .auth-modal-root.open { display:flex; }
+      .auth-backdrop { position:absolute; inset:0; background: radial-gradient(circle at top, rgba(255,122,0,.14), transparent 34%), rgba(15,23,42,.42); backdrop-filter:blur(10px); }
+      .auth-modal { position:relative; z-index:1; width:min(100%,560px); padding:48px 48px 40px; border-radius:var(--radius-lg); border:1px solid var(--line); background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,248,242,.96)), #fff; box-shadow:0 24px 80px rgba(15,23,42,.18), 0 0 0 1px rgba(255,122,0,.04); }
+      .auth-modal[hidden] { display:none; }
+      .auth-title { margin:0; text-align:center; font-size:1.7rem; font-weight:700; letter-spacing:.02em; }
+      .auth-close { position:absolute; top:18px; right:18px; width:44px; height:44px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.92); color:var(--text); font-size:1.7rem; font-weight:700; line-height:1; cursor:pointer; }
+      .auth-form { margin-top:24px; display:grid; gap:12px; }
+      .auth-field { display:grid; grid-template-columns:130px 1fr; align-items:center; min-height:60px; padding:0 18px; border:1px solid var(--line); border-radius:16px; background:rgba(245,247,251,.86); }
+      .auth-field label { color:var(--text); font-size:.98rem; font-weight:600; }
+      .auth-field input { width:100%; border:0; outline:0; text-align:right; font:inherit; color:var(--text); background:transparent; }
+      .auth-field input::placeholder { color:var(--muted); }
+      .auth-actions { margin-top:12px; display:grid; gap:14px; }
+      .auth-actions.login-actions, .auth-actions.confirm-actions { grid-template-columns:1fr 1fr; }
+      .auth-action { min-height:54px; border-radius:999px; border:1px solid var(--line); font-size:1rem; font-weight:700; cursor:pointer; }
+      .auth-action-secondary { background:rgba(255,255,255,.92); color:var(--text); }
+      .auth-action-primary { border-color:transparent; background:linear-gradient(135deg, var(--brand), var(--brand-deep)); color:#fff; }
+      .auth-action-danger { border-color:transparent; background:linear-gradient(135deg, #e65f5f, #c93b3b); color:#fff; }
+      .auth-error { min-height:22px; margin-top:4px; color:#d14343; font-size:.9rem; font-weight:600; }
+      .auth-copy { margin:18px 0 0; color:var(--muted); text-align:center; line-height:1.7; font-size:.96rem; }
+
+      .menu-bar {
+        padding: 14px 0;
+      }
+
+      .menu-list {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .menu-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        font-weight: 600;
+        white-space: nowrap;
+        flex: 0 0 auto;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      }
+
+      .menu-item:hover,
+      .menu-dropdown.open .menu-toggle {
+        color: var(--text);
+        border-color: rgba(255, 122, 0, 0.2);
+        background: #fff2e5;
+        transform: translateY(-1px);
+      }
+
+      .menu-item.active {
+        color: #fff;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+      }
+
+      .download-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 0 20px;
+        border: 1px solid rgba(255, 122, 0, 0.16);
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(255, 244, 234, 0.96), rgba(255, 232, 212, 0.96));
+        color: #b45c12;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: 0 12px 24px rgba(255, 122, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      }
+
+      .download-btn::before {
+        content: "⇩";
+        font-size: 0.92rem;
+        line-height: 1;
+      }
+
+      .download-btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 122, 0, 0.26);
+        color: #9f4e09;
+        box-shadow: 0 16px 30px rgba(255, 122, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      }
+      .category-btn::before {
+        content: "☷";
+        font-size: 0.9rem;
+        line-height: 1;
+      }
+
+
+      .menu-scroller {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .menu-list {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        scroll-behavior: smooth;
+        padding: 2px 0;
+        min-width: 0;
+        width: 100%;
+      }
+
+      .menu-list::-webkit-scrollbar {
+        display: none;
+      }
+
+      .menu-nav {
+        width: 42px;
+        height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--text);
+        font-size: 1.25rem;
+        cursor: pointer;
+        flex: 0 0 auto;
+      }
+
+      .menu-item-static {
+        cursor: not-allowed;
+      }
+
+      .menu-dropdown {
+        position: relative;
+        flex: 0 0 auto;
+      }
+
+      .menu-toggle {
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .menu-caret {
+        font-size: 0.82rem;
+        transition: transform 0.2s ease;
+      }
+
+      .menu-dropdown.open .menu-caret {
+        transform: rotate(180deg);
+      }
+
+      .submenu {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        min-width: 180px;
+        padding: 8px;
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: var(--shadow);
+        z-index: 10;
+      }
+
+      .menu-dropdown.open .submenu {
+        display: flex;
+      }
+
+      .submenu a {
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: var(--muted);
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+
+      .submenu a:hover {
+        color: var(--text);
+        background: var(--surface-muted);
+      }
+
+      .global-top-ads {
+        padding: 4px 0 14px;
+      }
+
+      .global-top-ad-track {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding: 4px 2px 6px;
+      }
+
+      .global-top-ad-track::-webkit-scrollbar {
+        display: none;
+      }
+
+      .global-top-ad-box {
+        flex: 0 0 84px;
+        min-width: 84px;
+        aspect-ratio: 1 / 1;
+        display: grid;
+        justify-items: center;
+        align-content: center;
+        gap: 8px;
+        padding: 10px 8px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255, 248, 242, 0.98), rgba(255, 255, 255, 0.94));
+        box-shadow: var(--shadow);
+      }
+
+      .global-top-ad-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .global-top-ad-name {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+
+      .page { padding:18px 0 40px; }
+      .results-shell { display:grid; gap:20px; }
+      .results-header, .results-card { padding:22px 24px; border-radius:var(--radius-lg); border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow); }
+      .results-title { margin:0; font-size:1.6rem; }
+      .results-desc { margin:10px 0 0; color:var(--muted); }
+      .toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-top:16px; }
+      .toggle-group, .pager { display:flex; flex-wrap:wrap; gap:10px; }
+      .toggle-btn, .pager-btn { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:0 16px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--muted); font-weight:700; cursor:pointer; }
+      .toggle-btn.active, .pager-btn.active { color:#fff; border-color:transparent; background:linear-gradient(135deg, var(--brand), var(--brand-deep)); }
+      .results-grid-post { display:grid; gap:20px; justify-items:center; }
+      .card.dynamic-card { position:relative; width:min(100%, 840px); aspect-ratio:2.45 / 1; min-height:auto; border:0; overflow:hidden; background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.78)), var(--dynamic-image, url("https://picsum.photos/seed/likes-dynamic-1/1200/675")) center/cover no-repeat; }
+      .card.dynamic-card::before { content:""; position:absolute; inset:0; background: linear-gradient(90deg, rgba(255,255,255,.08), transparent 24%, transparent 72%, rgba(255,255,255,.04)), radial-gradient(circle at 24% 65%, rgba(255,196,170,.22), transparent 18%), radial-gradient(circle at 62% 58%, rgba(255,120,120,.16), transparent 16%), radial-gradient(circle at 86% 30%, rgba(255,255,255,.12), transparent 14%); mix-blend-mode:screen; }
+      .card.dynamic-card.variant-b { background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.78)), var(--dynamic-image, url("https://picsum.photos/seed/likes-dynamic-2/1200/675")) center/cover no-repeat; }
+      .card.dynamic-card.variant-c { background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.78)), var(--dynamic-image, url("https://picsum.photos/seed/likes-dynamic-3/1200/675")) center/cover no-repeat; }
+      .card.dynamic-card.variant-d { background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.78)), var(--dynamic-image, url("https://picsum.photos/seed/likes-dynamic-4/1200/675")) center/cover no-repeat; }
+      .dynamic-link { position:absolute; inset:0; z-index:2; }
+      .dynamic-content { position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:22px; text-align:center; }
+      .dynamic-title { margin:0; max-width:92%; color:#fff; font-size:1.02rem; line-height:1.55; font-weight:700; text-shadow:0 2px 12px rgba(0,0,0,.34); }
+      .dynamic-meta { margin-top:14px; display:inline-flex; align-items:center; justify-content:center; color:rgba(255,255,255,.92); font-size:.9rem; font-weight:600; }
+      .dynamic-tags { margin-top:12px; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+      .dynamic-tag { padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); color:rgba(255,255,255,.94); font-size:.78rem; font-weight:600; }
+      .results-grid-video { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:16px; }
+      .card { overflow:hidden; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--surface); box-shadow:var(--shadow); transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+      .card:hover { transform:translateY(-4px); border-color:rgba(255,122,0,.2); box-shadow:0 18px 38px rgba(23,32,51,.12); }
+      .card.dynamic-card:hover { box-shadow:0 22px 44px rgba(23,32,51,.18); }
+      .video-cover { position:relative; aspect-ratio:16/9; background: linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,.26)), var(--video-image, url("https://picsum.photos/seed/likes-video/800/450")) center/cover no-repeat; }
+      .video-cover::after { content:""; position:absolute; inset:14px; border-radius:14px; background:linear-gradient(135deg, rgba(255,255,255,.16), transparent); }
+      .cover-metric { position:absolute; right:12px; bottom:12px; z-index:1; padding:6px 10px; border-radius:999px; background:rgba(23,32,51,.76); color:#fff; font-size:.78rem; font-weight:700; display:inline-flex; align-items:center; gap:6px; }
+      .cover-views { left:12px; right:auto; }
+      .cover-likes { right:12px; }
+      .cover-views::before { content:"▶"; font-size:.72rem; }
+      .cover-likes::before { content:"♥"; font-size:.76rem; }
+      .card-body { padding:16px; }
+      .card-title.video-title { margin:0; font-size:.98rem; line-height:1.5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+      .tag { padding:7px 10px; border-radius:999px; background:var(--surface-muted); color:var(--muted); font-size:.78rem; font-weight:700; }
+      .meta-row { display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:12px; margin-top:12px; color:var(--muted); font-size:.86rem; }
+      .meta-item { display:inline-flex; align-items:center; gap:6px; }
+      .meta-separator { width:4px; height:4px; border-radius:999px; background:#b8c0cd; }
+      
+
+
+
+      .requirements-float {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 140;
+        min-height: 48px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+        color: #fff;
+        font-weight: 800;
+        box-shadow: 0 18px 38px rgba(255, 106, 0, 0.28);
+        cursor: pointer;
+      }
+      .requirements-modal-root {
+        position: fixed;
+        inset: 0;
+        z-index: 220;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .requirements-modal-root.open { display: flex; }
+      .requirements-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.48);
+        backdrop-filter: blur(10px);
+      }
+      .requirements-modal {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 860px);
+        max-height: min(86vh, 820px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+        padding: 26px;
+        border-radius: 28px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,248,242,.97)), #fff;
+        box-shadow: 0 28px 90px rgba(15, 23, 42, 0.24);
+      }
+      .requirements-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .requirements-title { margin: 0; font-size: 1.45rem; color: var(--text); }
+      .requirements-actions { display: flex; align-items: center; gap: 10px; }
+      .requirements-copy,
+      .requirements-save,
+      .requirements-close {
+        min-height: 40px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--text);
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .requirements-copy, .requirements-save { padding: 0 16px; }
+      .requirements-close { width: 40px; font-size: 1.2rem; }
+      .requirements-copy.is-success, .requirements-save.is-success { color: #fff; border-color: transparent; background: linear-gradient(135deg, #22c55e, #16a34a); }
+      .requirements-copy.is-error, .requirements-save.is-error { color: #fff; border-color: transparent; background: linear-gradient(135deg, #ef4444, #dc2626); }
+      .requirements-content { display: grid; gap: 14px; }
+      .requirements-content[contenteditable="true"] {
+        padding: 4px;
+        border-radius: 22px;
+        outline: 2px dashed rgba(255, 122, 0, 0.22);
+        outline-offset: 6px;
+      }
+      .requirements-content[contenteditable="true"]:focus {
+        outline-color: rgba(255, 122, 0, 0.5);
+      }
+      .requirements-status { min-height: 20px; margin-top: 12px; color: var(--muted); font-size: 0.88rem; }
+      .requirements-status.is-success { color: #16a34a; }
+      .requirements-status.is-error { color: #dc2626; }
+      .requirements-card {
+        padding: 18px;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,.78);
+      }
+      .requirements-card h3 { margin: 0 0 12px; font-size: 1.04rem; }
+      .requirements-card p,
+      .requirements-card li { color: var(--muted); line-height: 1.78; font-size: .94rem; }
+      .requirements-card p { margin: 0 0 8px; }
+      .requirements-card ul { margin: 0; padding-left: 20px; }
+      @media (max-width: 780px) {
+        .requirements-float { right: 14px; bottom: 14px; min-height: 42px; padding: 0 14px; font-size: .88rem; }
+        .requirements-modal-root { padding: 14px; }
+        .requirements-modal { padding: 20px; border-radius: 22px; }
+        .requirements-head { align-items: flex-start; flex-direction: column; }
+        .requirements-actions { width: 100%; }
+        .requirements-copy { flex: 1; }
+      }
+      .bottom-ad-section { margin: 32px auto 0; }
+      .bottom-ad { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+      .bottom-ad-item {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 72px; padding: 14px 16px;
+        border-radius: 10px; border: 1px solid rgba(255,255,255,.06); background: linear-gradient(180deg, #212121, #171717); box-shadow: 0 10px 22px rgba(0,0,0,.16);
+      }
+      .bottom-ad-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+      .bottom-ad-logo {
+        width: 26px; height: 26px; flex: 0 0 auto; border-radius: 999px; display: grid; place-items: center; color: #111;
+        font-size: .72rem; font-weight: 800; background: linear-gradient(135deg, #ffb347, #ff7a00);
+      }
+      .bottom-ad-logo.blue { background: linear-gradient(135deg, #5cc8ff, #2f80ed); }
+      .bottom-ad-logo.gold { background: linear-gradient(135deg, #f7d154, #d89b00); }
+      .bottom-ad-logo.purple { background: linear-gradient(135deg, #8f7bff, #5b34ff); }
+      .bottom-ad-text { min-width: 0; color: #f3f3f3; font-size: .92rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .bottom-ad-arrow {
+        flex: 0 0 auto; width: 20px; height: 20px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2);
+        display: grid; place-items: center; color: rgba(255,255,255,.78); font-size: .8rem;
+      }
+      @media (max-width: 1180px) { .bottom-ad { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 780px) { .bottom-ad { grid-template-columns: 1fr; } }
+.footer { margin-top:32px; padding:28px 0 40px; border-top:1px solid var(--line); }
+      .footer-grid { display:grid; grid-template-columns:1.3fr repeat(3, 1fr); gap:18px; }
+      .footer-card { padding:20px; border-radius:var(--radius-md); border:1px solid var(--line); background:rgba(255,255,255,.72); }
+      .footer-card h3 { margin:0 0 10px; font-size:1rem; }
+      .footer-card p, .footer-card a { margin:0; color:var(--muted); line-height:1.7; font-size:.92rem; }
+      .footer-action { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 16px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--text); font-weight:700; }
+      @media (max-width: 1180px) { .topbar-inner { flex-wrap:wrap; } .results-grid-video { grid-template-columns:repeat(3,minmax(0,1fr)); } .footer-grid, .history-list { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media (max-width: 780px) {
+        .container { width:min(var(--wrap), calc(100% - 20px)); }
+        .results-grid-video, .footer-grid, .history-list { grid-template-columns:1fr; }
+        .account-actions, .btn { width:100%; }
+        .account-menu { left:0; right:0; min-width:0; }
+        .card.dynamic-card { width:100%; }
+        .auth-modal { padding:40px 18px 24px; }
+        .auth-title { font-size:1.7rem; }
+        .auth-field { grid-template-columns:88px 1fr; min-height:54px; padding:0 14px; }
+        .auth-actions.login-actions, .auth-actions.confirm-actions { grid-template-columns:1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="logo" href="index.html">
+          <span class="logo-mark">P</span>
+          <span class="logo-text"><strong>产品名称</strong></span>
+        </a>
+        <div class="searchbox">
+          <label class="searchbar">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4.5a6 6 0 1 0 0 12a6 6 0 0 0 0-12Zm0-1.5a7.5 7.5 0 1 1 4.74 13.32l4.22 4.21a.75.75 0 1 1-1.06 1.06l-4.21-4.22A7.5 7.5 0 0 1 10.5 3Z" fill="currentColor"/></svg>
+            <input type="text" placeholder="搜索关键字" />
+            <button class="search-submit" type="button">搜索</button>
+          </label>
+          <div class="search-dropdown">
+            <div class="search-head">
+              <strong>历史记录</strong>
+              <button class="history-clear" type="button" aria-label="清空历史记录">
+                <svg class="history-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3.75A2.25 2.25 0 0 0 6.75 6v.75H4.5a.75.75 0 0 0 0 1.5h.84l.73 9.39A2.25 2.25 0 0 0 8.31 19.5h7.38a2.25 2.25 0 0 0 2.24-1.86l.73-9.39h.84a.75.75 0 0 0 0-1.5h-2.25V6A2.25 2.25 0 0 0 15 3.75H9Zm6.75 3H8.25V6A.75.75 0 0 1 9 5.25h6a.75.75 0 0 1 .75.75v.75ZM9.75 10.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5a.75.75 0 0 1 .75-.75Zm4.5 0a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5a.75.75 0 0 1 .75-.75Z" fill="currentColor"/></svg>
+              </button>
+            </div>
+            <div class="history-list"></div>
+            <div class="hot-search">
+              <div class="hot-head"><strong>热门搜索</strong></div>
+              <div class="hot-tags">
+                <span class="hot-tag"><span class="hot-rank">1</span><span>热门频道</span></span>
+                <span class="hot-tag"><span class="hot-rank">2</span><span>今日更新</span></span>
+                <span class="hot-tag"><span class="hot-rank">3</span><span>精品视频</span></span>
+                <span class="hot-tag"><span class="hot-rank">4</span><span>剧情专区</span></span>
+                <span class="hot-tag"><span class="hot-rank">5</span><span>平台榜单</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a class="download-btn category-btn" href="all-categories.html">全部分类</a>
+        <button class="download-btn" type="button">APP下载</button>
+        <div class="account-actions">
+          <button class="btn account-trigger" type="button" aria-expanded="false">
+            <span class="account-label">登录</span>
+          </button>
+          <div class="account-menu" hidden>
+            <a class="account-menu-item" href="watch-history.html">观看历史</a>
+            <a class="account-menu-item" href="my-likes.html">我的点赞</a>
+            <button class="account-menu-item account-menu-item-danger" type="button" data-logout>退出账号</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container menu-bar">
+      <div class="menu-scroller">
+        <button class="menu-nav menu-nav-prev" type="button" aria-label="向左切换菜单">‹</button>
+      <nav class="menu-list" data-menu-scroll>
+        <a class="menu-item" data-menu="home" href="index.html">首页</a>
+        <a class="menu-item" data-menu="post-a" href="post-list.html?menu=post-a">一级菜单A（帖子）</a>
+        <a class="menu-item" data-menu="video-b" href="video-list.html?menu=video-b">一级菜单B（视频）</a>
+        <a class="menu-item" data-menu="video-c" href="video-list.html?menu=video-c">一级菜单C（视频）</a>
+        <a class="menu-item" data-menu="video-d" href="video-list.html?menu=video-d">一级菜单D（视频）</a>
+        <div class="menu-dropdown">
+          <button class="menu-item menu-toggle" data-menu="menu-e" type="button" aria-expanded="false"><span>一级菜单E</span><span class="menu-caret">⌄</span></button>
+          <div class="submenu"><a href="video-list.html?menu=menu-e">二级菜单 E-1</a><a href="video-list.html?menu=menu-e">二级菜单 E-2</a><a href="video-list.html?menu=menu-e">二级菜单 E-3</a></div>
+        </div>
+        <a class="menu-item" data-menu="novel-f" href="novel-list.html?menu=novel-f">一级菜单F（小说）</a>
+      <button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button></nav>
+        <button class="menu-nav menu-nav-next" type="button" aria-label="向右切换菜单">›</button>
+      </div>
+    </div>
+
+    <section class="global-top-ads">
+      <div class="container">
+        <div class="global-top-ad-track" aria-label="顶部广告栏">
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">AI</span><span class="global-top-ad-name">广告A</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">HD</span><span class="global-top-ad-name">广告B</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">MV</span><span class="global-top-ad-name">广告C</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">UP</span><span class="global-top-ad-name">广告D</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">EX</span><span class="global-top-ad-name">广告E</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">SH</span><span class="global-top-ad-name">广告F</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">VR</span><span class="global-top-ad-name">广告G</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">TV</span><span class="global-top-ad-name">广告H</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">CL</span><span class="global-top-ad-name">广告I</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">RT</span><span class="global-top-ad-name">广告J</span></div>
+        </div>
+      </div>
+    </section>
+
+    <main class="container page">
+      <div class="results-shell">
+        <section class="results-header">
+          <h1 class="results-title">我的点赞</h1>
+          <p class="results-desc">这里汇总用户已经点过赞的帖子和视频内容。</p>
+          <div class="toolbar">
+            <div class="toggle-group">
+              <button class="toggle-btn active" type="button" data-type="post">帖子列表</button>
+              <button class="toggle-btn" type="button" data-type="video">视频列表</button>
+            </div>
+          </div>
+        </section>
+        <section class="results-card">
+          <div id="postResults" class="results-grid-post"></div>
+          <div id="videoResults" class="results-grid-video" style="display:none;"></div>
+        </section>
+        <div class="pager" id="pager"></div>
+      </div>
+    </main>
+
+    
+    <section class="container bottom-ad-section">
+      <div class="bottom-ad">
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo blue">HL</span><span class="bottom-ad-text">热点资讯网</span></span><span class="bottom-ad-arrow">›</span></a>
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo gold">SH</span><span class="bottom-ad-text">中国站点</span></span><span class="bottom-ad-arrow">›</span></a>
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo">91</span><span class="bottom-ad-text">男同频道</span></span><span class="bottom-ad-arrow">›</span></a>
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo blue">HD</span><span class="bottom-ad-text">海岛社区</span></span><span class="bottom-ad-arrow">›</span></a>
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo purple">91</span><span class="bottom-ad-text">91精选</span></span><span class="bottom-ad-arrow">›</span></a>
+      </div>
+    </section>
+
+<footer class="footer">
+      <div class="container footer-grid">
+        <section class="footer-card"><h3>产品名称</h3><p>这里展示产品名称与品牌说明，用于统一页脚识别和平台基础信息呈现。</p></section>
+        <section class="footer-card"><h3>联系客服</h3><p><a class="footer-action" href="#">在线客服入口</a></p></section>
+        <section class="footer-card"><h3>官方群组</h3><p><a class="footer-action" href="#">进入官方群组</a></p></section>
+        <section class="footer-card"><h3>商务合作</h3><p><a class="footer-action" href="#">商务合作入口</a></p></section>
+      </div>
+    </footer>
+
+
+
+
+    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
+    <div class="requirements-modal-root" aria-hidden="true">
+      <div class="requirements-backdrop" data-close-requirements></div>
+      <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
+        <div class="requirements-head">
+          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
+          <div class="requirements-actions">
+            <button class="requirements-copy" type="button" data-copy-requirements>复制需求说明</button>
+            <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
+            <button class="requirements-close" type="button" data-close-requirements aria-label="关闭需求说明">×</button>
+          </div>
+        </div>
+        <div class="requirements-content" contenteditable="true" spellcheck="false">
+          <section class="requirements-card">
+            <h3>页面概述</h3>
+            <ul>
+              <li>我的点赞页用于展示用户已经点赞过的帖子和视频内容。</li>
+            </ul>
+          </section>
+          <section class="requirements-card">
+            <h3>核心模块</h3>
+            <ul>
+              <li>顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。</li>
+              <li>页面标题展示我的点赞说明。</li>
+              <li>内容分类 Tab 包含帖子列表和视频列表。</li>
+              <li>帖子列表展示动态内容卡片，视频列表展示视频内容卡片。</li>
+              <li>分页器用于切换点赞数据。</li>
+            </ul>
+          </section>
+          <section class="requirements-card">
+            <h3>交互规则</h3>
+            <ul>
+              <li>点击 Tab 切换已点赞帖子和已点赞视频。</li>
+              <li>点击卡片进入对应详情页。</li>
+            </ul>
+          </section>
+        </div>
+        <div class="requirements-status" data-requirements-status>文案可直接编辑，点击“保存文案”后会保存在当前浏览器。</div>
+      </section>
+      <script type="text/plain" data-requirements-copy-text>我的点赞页需求说明
+
+页面概述
+- 我的点赞页用于展示用户已经点赞过的帖子和视频内容。
+
+核心模块
+- 顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。
+- 页面标题展示我的点赞说明。
+- 内容分类 Tab 包含帖子列表和视频列表。
+- 帖子列表展示动态内容卡片，视频列表展示视频内容卡片。
+- 分页器用于切换点赞数据。
+
+交互规则
+- 点击 Tab 切换已点赞帖子和已点赞视频。
+- 点击卡片进入对应详情页。</script>
+    </div>
+
+    <div class="auth-modal-root" aria-hidden="true">
+      <div class="auth-backdrop"></div>
+      <section class="auth-modal" data-modal="login">
+        <h2 class="auth-title">登录</h2>
+        <form class="auth-form" data-auth-form="login">
+          <div class="auth-field"><label for="loginAccount">账号</label><input id="loginAccount" name="account" type="text" placeholder="请输入账号" /></div>
+          <div class="auth-field"><label for="loginPassword">密码</label><input id="loginPassword" name="password" type="password" placeholder="请输入密码" /></div>
+          <div class="auth-actions login-actions">
+            <button class="auth-action auth-action-secondary" type="button" data-open-register>注册</button>
+            <button class="auth-action auth-action-primary" type="submit">登录</button>
+          </div>
+          <p class="auth-error" data-auth-error="login"></p>
+        </form>
+      </section>
+      <section class="auth-modal" data-modal="register" hidden>
+        <button class="auth-close" type="button" data-close-auth aria-label="关闭">×</button>
+        <h2 class="auth-title">注册</h2>
+        <form class="auth-form" data-auth-form="register">
+          <div class="auth-field"><label for="registerAccount">账号</label><input id="registerAccount" name="account" type="text" placeholder="请输入账号" /></div>
+          <div class="auth-field"><label for="registerPassword">密码</label><input id="registerPassword" name="password" type="password" placeholder="包含大小写字母与数字" /></div>
+          <div class="auth-field"><label for="registerConfirm">确认密码</label><input id="registerConfirm" name="confirmPassword" type="password" placeholder="包含大小写字母与数字" /></div>
+          <div class="auth-actions"><button class="auth-action auth-action-primary" type="submit">注册</button></div>
+        </form>
+      </section>
+      <section class="auth-modal" data-modal="logout-confirm" hidden>
+        <h2 class="auth-title">退出账号</h2>
+        <p class="auth-copy">确认退出当前账号吗？</p>
+        <div class="auth-actions confirm-actions">
+          <button class="auth-action auth-action-secondary" type="button" data-cancel-logout>取消</button>
+          <button class="auth-action auth-action-danger" type="button" data-confirm-logout>确认退出</button>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const menuDropdown = document.querySelector(".menu-dropdown");
+      const menuToggle = document.querySelector(".menu-toggle");
+      const menuItems = Array.from(document.querySelectorAll(".menu-list .menu-item[data-menu]"));
+      const menuScroll = document.querySelector("[data-menu-scroll]");
+      const menuPrev = document.querySelector(".menu-nav-prev");
+      const menuNext = document.querySelector(".menu-nav-next");
+      const menuSearchParams = new URLSearchParams(window.location.search);
+      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e", "novel-f"]);
+
+      const resolveActiveMenu = () => {
+        const { pathname } = window.location;
+        const menuParam = menuSearchParams.get("menu");
+
+        if (menuParam && validMenus.has(menuParam)) return menuParam;
+
+        if (pathname.endsWith("/index.html") || pathname.endsWith("index.html")) return "home";
+        if (pathname.endsWith("/video-list.html") || pathname.endsWith("video-list.html")) return "video-b";
+        if (pathname.endsWith("/post-list.html") || pathname.endsWith("post-list.html")) return "post-a";
+        if (pathname.endsWith("/novel-list.html") || pathname.endsWith("novel-list.html")) return "novel-f";
+        if (pathname.endsWith("/novel-detail.html") || pathname.endsWith("novel-detail.html")) return "novel-f";
+        if (pathname.endsWith("/search-results.html") || pathname.endsWith("search-results.html")) {
+          return menuSearchParams.get("type") === "video" ? "video-b" : "post-a";
+        }
+        if (
+          pathname.endsWith("/watch-history.html") ||
+          pathname.endsWith("watch-history.html") ||
+          pathname.endsWith("/my-likes.html") ||
+          pathname.endsWith("my-likes.html") ||
+          pathname.endsWith("/dynamic-detail.html") ||
+          pathname.endsWith("dynamic-detail.html")
+        ) {
+          return "post-a";
+        }
+        return null;
+      };
+
+      const syncMenuActiveState = () => {
+        const activeMenu = resolveActiveMenu();
+        menuItems.forEach((item) => item.classList.toggle("active", item.dataset.menu === activeMenu));
+      };
+
+      syncMenuActiveState();
+      menuPrev?.addEventListener("click", () => menuScroll?.scrollBy({ left: -280, behavior: "smooth" }));
+      menuNext?.addEventListener("click", () => menuScroll?.scrollBy({ left: 280, behavior: "smooth" }));
+
+      if (menuDropdown && menuToggle) {
+        const submenu = menuDropdown.querySelector(".submenu");
+        const closeMenuDropdown = () => {
+          menuDropdown.classList.remove("open");
+          menuToggle.setAttribute("aria-expanded", "false");
+        };
+        const positionSubmenu = () => {
+          if (!submenu) return;
+          const rect = menuToggle.getBoundingClientRect();
+          submenu.style.position = "fixed";
+          submenu.style.top = `${rect.bottom + 10}px`;
+          submenu.style.left = `${rect.left}px`;
+          submenu.style.minWidth = `${Math.max(180, rect.width)}px`;
+        };
+        menuToggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const isOpen = menuDropdown.classList.toggle("open");
+          menuToggle.setAttribute("aria-expanded", String(isOpen));
+          if (isOpen) positionSubmenu();
+        });
+        submenu?.addEventListener("click", (event) => event.stopPropagation());
+        window.addEventListener("resize", () => {
+          if (menuDropdown.classList.contains("open")) positionSubmenu();
+        });
+        window.addEventListener("scroll", () => {
+          if (menuDropdown.classList.contains("open")) positionSubmenu();
+        }, true);
+        document.addEventListener("click", (event) => {
+          if (!menuDropdown.contains(event.target)) closeMenuDropdown();
+        });
+      }
+      const searchBox = document.querySelector(".searchbox");
+      const searchInput = document.querySelector(".searchbar input");
+      const searchSubmit = document.querySelector(".search-submit");
+      const historyList = document.querySelector(".history-list");
+      const clearHistoryBtn = document.querySelector(".history-clear");
+      const hotTags = Array.from(document.querySelectorAll(".hot-tag"));
+      let searchHistory = ["最新上架", "热门专题", "剧情合集", "会员推荐"];
+      const navigateToSearch = (keyword, type = "post", sort = "latest", page = "1") => {
+        const q = keyword.trim();
+        if (!q) return;
+        const params = new URLSearchParams({ q, type, sort, page });
+        window.location.href = `search-results.html?${params.toString()}`;
+      };
+      const renderHistory = () => {
+        if (!historyList) return;
+        if (!searchHistory.length) {
+          historyList.innerHTML = "";
+          historyList.classList.add("is-empty");
+          return;
+        }
+        historyList.classList.remove("is-empty");
+        historyList.innerHTML = searchHistory.map((item, index) => `
+          <div class="history-item">
+            <div class="history-label"><span>⏱</span><span>${item}</span></div>
+            <button class="history-delete" type="button" data-index="${index}" aria-label="删除历史记录">×</button>
+          </div>`).join("");
+      };
+      if (searchBox && searchInput && searchSubmit && historyList && clearHistoryBtn) {
+        renderHistory();
+        const openSearch = () => searchBox.classList.add("open");
+        searchInput.addEventListener("focus", openSearch);
+        searchInput.addEventListener("click", openSearch);
+        searchBox.querySelector(".searchbar").addEventListener("click", openSearch);
+        historyList.addEventListener("click", (event) => {
+          const deleteButton = event.target.closest(".history-delete");
+          const historyItem = event.target.closest(".history-item");
+          if (deleteButton) {
+            event.stopPropagation();
+            const index = Number(deleteButton.dataset.index);
+            searchHistory.splice(index, 1);
+            renderHistory();
+            openSearch();
+            return;
+          }
+          if (historyItem) {
+            const text = historyItem.querySelector(".history-label span:last-child")?.textContent || "";
+            searchInput.value = text;
+            navigateToSearch(text);
+          }
+        });
+        clearHistoryBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          searchHistory = [];
+          renderHistory();
+          openSearch();
+        });
+        hotTags.forEach((tag) => {
+          tag.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const text = tag.textContent.replace(/^\d+/, "").trim();
+            searchInput.value = text;
+            searchHistory = [text, ...searchHistory.filter((item) => item !== text)].slice(0, 6);
+            renderHistory();
+            navigateToSearch(text);
+          });
+        });
+        searchSubmit.addEventListener("click", (event) => {
+          event.stopPropagation();
+          navigateToSearch(searchInput.value);
+        });
+        searchInput.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            navigateToSearch(searchInput.value);
+          }
+        });
+        document.addEventListener("click", (event) => {
+          if (!searchBox.contains(event.target)) searchBox.classList.remove("open");
+        });
+      }
+
+      const ACCOUNT_STORAGE_KEY = "platformUserState";
+      const accountActions = document.querySelector(".account-actions");
+      const accountTrigger = document.querySelector(".account-trigger");
+      const accountLabel = document.querySelector(".account-label");
+      const accountMenu = document.querySelector(".account-menu");
+      const logoutButton = document.querySelector("[data-logout]");
+      const authModalRoot = document.querySelector(".auth-modal-root");
+      const loginModal = document.querySelector('[data-modal="login"]');
+      const registerModal = document.querySelector('[data-modal="register"]');
+      const logoutConfirmModal = document.querySelector('[data-modal="logout-confirm"]');
+      const loginForm = document.querySelector('[data-auth-form="login"]');
+      const registerForm = document.querySelector('[data-auth-form="register"]');
+      const loginError = document.querySelector('[data-auth-error="login"]');
+      const openRegisterBtn = document.querySelector("[data-open-register]");
+      const cancelLogoutButton = document.querySelector("[data-cancel-logout]");
+      const confirmLogoutButton = document.querySelector("[data-confirm-logout]");
+      const closeAuthButtons = Array.from(document.querySelectorAll("[data-close-auth]"));
+      let accountState = { loggedIn: false, username: "" };
+      try {
+        const savedState = JSON.parse(window.localStorage.getItem(ACCOUNT_STORAGE_KEY) || "null");
+        if (savedState?.loggedIn) accountState = { loggedIn: true, username: savedState.username || "用户" };
+      } catch (error) { accountState = { loggedIn: false, username: "" }; }
+      const saveAccountState = () => window.localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify(accountState));
+      const closeAccountMenu = () => {
+        if (!accountActions || !accountTrigger) return;
+        accountActions.classList.remove("open");
+        accountTrigger.setAttribute("aria-expanded", "false");
+      };
+      const renderAccountState = () => {
+        if (!accountTrigger || !accountLabel || !accountMenu) return;
+        accountLabel.textContent = accountState.loggedIn ? "个人中心" : "登录";
+        accountMenu.hidden = !accountState.loggedIn;
+        if (!accountState.loggedIn) closeAccountMenu();
+      };
+      const closeAuthModal = () => {
+        if (!authModalRoot || !loginModal || !registerModal || !logoutConfirmModal) return;
+        authModalRoot.classList.remove("open");
+        authModalRoot.setAttribute("aria-hidden", "true");
+        loginModal.hidden = true;
+        registerModal.hidden = true;
+        logoutConfirmModal.hidden = true;
+        document.body.classList.remove("modal-open");
+        if (loginError) loginError.textContent = "";
+      };
+      const openAuthModal = (type) => {
+        if (!authModalRoot || !loginModal || !registerModal || !logoutConfirmModal) return;
+        closeAccountMenu();
+        menuDropdown?.classList.remove("open");
+        menuToggle?.setAttribute("aria-expanded", "false");
+        searchBox?.classList.remove("open");
+        authModalRoot.classList.add("open");
+        authModalRoot.setAttribute("aria-hidden", "false");
+        loginModal.hidden = type !== "login";
+        registerModal.hidden = type !== "register";
+        logoutConfirmModal.hidden = type !== "logout-confirm";
+        document.body.classList.add("modal-open");
+      };
+      const loginSuccess = (username) => {
+        accountState = { loggedIn: true, username: username || "用户" };
+        saveAccountState();
+        renderAccountState();
+        closeAuthModal();
+      };
+      const registerSuccess = () => {
+        accountState = { loggedIn: false, username: "" };
+        saveAccountState();
+        renderAccountState();
+        closeAuthModal();
+      };
+      const logout = () => {
+        accountState = { loggedIn: false, username: "" };
+        saveAccountState();
+        renderAccountState();
+        closeAccountMenu();
+      };
+      if (accountTrigger && accountActions && accountMenu) {
+        renderAccountState();
+        accountTrigger.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (!accountState.loggedIn) {
+            openAuthModal("login");
+            return;
+          }
+          const isOpen = accountActions.classList.toggle("open");
+          accountTrigger.setAttribute("aria-expanded", String(isOpen));
+          searchBox?.classList.remove("open");
+          menuDropdown?.classList.remove("open");
+          menuToggle?.setAttribute("aria-expanded", "false");
+        });
+        accountMenu.addEventListener("click", (event) => event.stopPropagation());
+        document.addEventListener("click", (event) => {
+          if (!accountActions.contains(event.target)) closeAccountMenu();
+        });
+      }
+      openRegisterBtn?.addEventListener("click", () => openAuthModal("register"));
+      closeAuthButtons.forEach((button) => button.addEventListener("click", closeAuthModal));
+      logoutButton?.addEventListener("click", () => openAuthModal("logout-confirm"));
+      cancelLogoutButton?.addEventListener("click", closeAuthModal);
+      confirmLogoutButton?.addEventListener("click", () => { closeAuthModal(); logout(); });
+      authModalRoot?.addEventListener("click", (event) => {
+        if (event.target === authModalRoot || event.target.classList.contains("auth-backdrop")) closeAuthModal();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && authModalRoot?.classList.contains("open")) closeAuthModal();
+      });
+      loginForm?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+        const account = String(formData.get("account") || "").trim();
+        const password = String(formData.get("password") || "").trim();
+        if (!account || !password) {
+          if (loginError) loginError.textContent = "请输入账号和密码";
+          return;
+        }
+        if (loginError) loginError.textContent = "";
+        loginSuccess(account);
+        loginForm.reset();
+      });
+      registerForm?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(registerForm);
+        const account = String(formData.get("account") || "").trim();
+        const password = String(formData.get("password") || "").trim();
+        const confirmPassword = String(formData.get("confirmPassword") || "").trim();
+        if (!account || !password || password !== confirmPassword) return;
+        registerSuccess();
+        registerForm.reset();
+      });
+
+      const state = { type: "post", page: 1 };
+      const postResults = Array.from({ length: 12 }, (_, index) => ({
+        title: `我的点赞帖子标题示例 ${index + 1}`,
+        date: `2026-04-${String((index % 18) + 1).padStart(2, "0")}`,
+        variant: ["", "variant-b", "variant-c", "variant-d"][index % 4],
+        tags: ["动态标签A", "动态标签B", "动态标签C"],
+        href: "dynamic-detail.html",
+      }));
+      const videoResults = Array.from({ length: 30 }, (_, index) => ({
+        title: `我的点赞视频标题示例 ${index + 1}`,
+        date: `2026-04-${String((index % 20) + 1).padStart(2, "0")}`,
+        views: 91000 + index * 3500,
+        likes: 1200 + index * 62,
+        viewsStat: `${(91000 + index * 3500) >= 10000 ? ((91000 + index * 3500) / 10000).toFixed(1) + "万" : (91000 + index * 3500)}`,
+        likesStat: `${(1200 + index * 62) >= 1000 ? ((1200 + index * 62) / 1000).toFixed(1) + "k" : (1200 + index * 62)}`,
+        tags: ["标签一", "标签二", "标签三"],
+        href: "video-detail.html",
+      }));
+      const typeButtons = Array.from(document.querySelectorAll(".toggle-btn"));
+      const pager = document.getElementById("pager");
+      const postContainer = document.getElementById("postResults");
+      const videoContainer = document.getElementById("videoResults");
+      const formatCount = (num) => (num >= 10000 ? `${(num / 10000).toFixed(1)}万` : `${num}`);
+      const pageSize = () => (state.type === "post" ? 10 : 25);
+      const currentData = () => (state.type === "post" ? postResults : videoResults);
+      const pageCount = () => Math.max(1, Math.ceil(currentData().length / pageSize()));
+      const renderPager = () => {
+        const totalPages = pageCount();
+        pager.innerHTML = "";
+        const makeBtn = (label, page, active = false, disabled = false) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = `pager-btn${active ? " active" : ""}`;
+          btn.textContent = label;
+          btn.disabled = disabled;
+          btn.style.opacity = disabled ? ".45" : "1";
+          btn.addEventListener("click", () => {
+            if (disabled) return;
+            state.page = page;
+            render();
+          });
+          pager.appendChild(btn);
+        };
+        makeBtn("上一页", Math.max(1, state.page - 1), false, state.page === 1);
+        for (let i = 1; i <= totalPages; i += 1) makeBtn(String(i), i, i === state.page);
+        makeBtn("下一页", Math.min(totalPages, state.page + 1), false, state.page === totalPages);
+      };
+      const renderPosts = (items) => {
+        postContainer.innerHTML = items.map((item) => `
+          <article class="card dynamic-card ${item.variant}">
+            <a class="dynamic-link" href="${item.href}" aria-label="查看动态详情"></a>
+            <div class="dynamic-content">
+              <h3 class="dynamic-title">${item.title}</h3>
+              <div class="dynamic-meta"><span>上架时间：${item.date}</span></div>
+              <div class="dynamic-tags">${item.tags.map((tag) => `<span class="dynamic-tag">${tag}</span>`).join("")}</div>
+            </div>
+          </article>`).join("");
+      };
+      const renderVideos = (items) => {
+        videoContainer.innerHTML = items.map((item) => `
+          <article class="card">
+            <a href="${item.href}"><div class="video-cover"><span class="cover-metric cover-views">${item.viewsStat}</span><span class="cover-metric cover-likes">${item.likesStat}</span></div></a>
+            <div class="card-body">
+              <h3 class="card-title video-title">${item.title}</h3>
+              <div class="tags">${item.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}</div>
+            </div>
+          </article>`).join("");
+      };
+      const render = () => {
+        const totalPages = pageCount();
+        state.page = Math.min(Math.max(1, state.page), totalPages);
+        const start = (state.page - 1) * pageSize();
+        const items = currentData().slice(start, start + pageSize());
+        typeButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.type === state.type));
+        const showPosts = state.type === "post";
+        postContainer.style.display = showPosts ? "grid" : "none";
+        videoContainer.style.display = showPosts ? "none" : "grid";
+        if (showPosts) renderPosts(items);
+        else renderVideos(items);
+        renderPager();
+      };
+      typeButtons.forEach((btn) => btn.addEventListener("click", () => {
+        state.type = btn.dataset.type;
+        state.page = 1;
+        render();
+      }));
+      render();
+
+
+
+      (() => {
+        const requirementsRoot = document.querySelector('.requirements-modal-root');
+        const openRequirementsBtn = document.querySelector('[data-open-requirements]');
+        const closeRequirementsBtns = document.querySelectorAll('[data-close-requirements]');
+        const copyRequirementsBtn = document.querySelector('[data-copy-requirements]');
+        const saveRequirementsBtn = document.querySelector('[data-save-requirements]');
+        const requirementsContent = document.querySelector('.requirements-content');
+        const requirementsStatus = document.querySelector('[data-requirements-status]');
+        const copyTextNode = document.querySelector('[data-requirements-copy-text]');
+        if (!requirementsRoot || !openRequirementsBtn || !requirementsContent) return;
+        const requirementsStorageKey = 'Y12_REQUIREMENTS_HTML:my-likes';
+        const savedRequirementsHtml = localStorage.getItem(requirementsStorageKey);
+        if (savedRequirementsHtml) requirementsContent.innerHTML = savedRequirementsHtml;
+        const closeFloatingLayers = () => {
+          document.querySelector('.searchbox')?.classList.remove('open');
+          document.querySelector('.account-actions')?.classList.remove('open');
+          const accountTrigger = document.querySelector('.account-trigger');
+          accountTrigger?.setAttribute('aria-expanded', 'false');
+          const menuDropdown = document.querySelector('.menu-dropdown');
+          const menuToggle = document.querySelector('.menu-toggle');
+          menuDropdown?.classList.remove('open');
+          menuToggle?.setAttribute('aria-expanded', 'false');
+        };
+        const openRequirements = () => {
+          closeFloatingLayers();
+          requirementsRoot.classList.add('open');
+          requirementsRoot.setAttribute('aria-hidden', 'false');
+          document.body.classList.add('requirements-open');
+        };
+        const closeRequirements = () => {
+          requirementsRoot.classList.remove('open');
+          requirementsRoot.setAttribute('aria-hidden', 'true');
+          document.body.classList.remove('requirements-open');
+        };
+        const fallbackCopy = (text) => {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          const ok = document.execCommand('copy');
+          textarea.remove();
+          return ok;
+        };
+        const setCopyState = (state) => {
+          if (!copyRequirementsBtn) return;
+          copyRequirementsBtn.classList.remove('is-success', 'is-error');
+          if (state === 'success') {
+            copyRequirementsBtn.textContent = '已复制';
+            copyRequirementsBtn.classList.add('is-success');
+          } else if (state === 'error') {
+            copyRequirementsBtn.textContent = '复制失败';
+            copyRequirementsBtn.classList.add('is-error');
+          }
+          window.setTimeout(() => {
+            copyRequirementsBtn.textContent = '复制需求说明';
+            copyRequirementsBtn.classList.remove('is-success', 'is-error');
+          }, 1400);
+        };
+        const setSaveState = (state) => {
+          if (!saveRequirementsBtn) return;
+          saveRequirementsBtn.classList.remove('is-success', 'is-error');
+          if (state === 'success') {
+            saveRequirementsBtn.textContent = '已保存';
+            saveRequirementsBtn.classList.add('is-success');
+            if (requirementsStatus) { requirementsStatus.textContent = '文案已保存到当前浏览器。'; requirementsStatus.classList.add('is-success'); requirementsStatus.classList.remove('is-error'); }
+          } else if (state === 'error') {
+            saveRequirementsBtn.textContent = '保存失败';
+            saveRequirementsBtn.classList.add('is-error');
+            if (requirementsStatus) { requirementsStatus.textContent = '保存失败，请检查浏览器本地存储权限。'; requirementsStatus.classList.add('is-error'); requirementsStatus.classList.remove('is-success'); }
+          }
+          window.setTimeout(() => {
+            saveRequirementsBtn.textContent = '保存文案';
+            saveRequirementsBtn.classList.remove('is-success', 'is-error');
+          }, 1400);
+        };
+        const saveRequirements = () => {
+          try {
+            localStorage.setItem(requirementsStorageKey, requirementsContent.innerHTML);
+            if (copyTextNode) copyTextNode.textContent = requirementsContent.innerText.trim();
+            setSaveState('success');
+          } catch (error) {
+            setSaveState('error');
+          }
+        };
+        openRequirementsBtn.addEventListener('click', openRequirements);
+        closeRequirementsBtns.forEach((button) => button.addEventListener('click', closeRequirements));
+        saveRequirementsBtn?.addEventListener('click', saveRequirements);
+        copyRequirementsBtn?.addEventListener('click', async () => {
+          const text = (requirementsContent?.innerText || copyTextNode?.textContent || '').trim();
+          if (!text) { setCopyState('error'); return; }
+          try {
+            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+            else if (!fallbackCopy(text)) throw new Error('fallback copy failed');
+            setCopyState('success');
+          } catch (error) {
+            try { if (fallbackCopy(text)) setCopyState('success'); else setCopyState('error'); }
+            catch (_) { setCopyState('error'); }
+          }
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && requirementsRoot.classList.contains('open')) closeRequirements();
+        });
+      })();
+
+
+    </script>
+  </body>
+</html>

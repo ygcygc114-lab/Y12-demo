@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>视频详情页</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --surface: rgba(255, 255, 255, 0.92);
+        --surface-muted: #eef2f8;
+        --text: #172033;
+        --muted: #6a768d;
+        --line: #d9e3f2;
+        --brand: #ff7a00;
+        --brand-deep: #ff9b4a;
+        --shadow: 0 18px 44px rgba(32, 51, 84, 0.08);
+        --radius-lg: 22px;
+        --radius-md: 18px;
+        --wrap: 1240px;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(255, 122, 0, 0.12), transparent 24%),
+          linear-gradient(180deg, #f9fbff 0%, #f4f7fb 100%);
+      }
+
+      body.modal-open { overflow: hidden; }
+      body.requirements-open { overflow: hidden; }
+      a { color: inherit; text-decoration: none; }
+      button, input, textarea { font: inherit; }
+
+      .container { width: min(var(--wrap), calc(100% - 40px)); margin: 0 auto; }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        padding: 16px 0;
+        background: rgba(249, 251, 255, 0.86);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(217, 227, 242, 0.8);
+      }
+
+      .topbar-inner { display: flex; align-items: center; gap: 22px; }
+      .logo { display: inline-flex; align-items: center; gap: 12px; }
+      .logo-mark {
+        width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep)); color: #fff; font-size: 1.55rem; font-weight: 800;
+      }
+      .logo-text { display: flex; flex-direction: column; gap: 3px; }
+      .logo-text strong { font-size: 1.45rem; }
+      .logo-text span { color: var(--muted); font-size: 0.92rem; }
+
+      .searchbox { position: relative; flex: 1; z-index: 60; }
+      .searchbar {
+        display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 18px; min-height: 56px;
+        border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.92); box-shadow: var(--shadow);
+      }
+      .search-icon { width: 20px; height: 20px; color: var(--text); flex-shrink: 0; }
+      .searchbar input { flex: 1; border: 0; outline: 0; background: transparent; color: var(--text); font-size: 1.02rem; }
+      .searchbar input::placeholder { color: #8b97ac; }
+      .search-submit {
+        min-width: 92px; min-height: 42px; border: 0; border-radius: 999px; cursor: pointer; font-weight: 700; color: #fff;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep)); box-shadow: 0 12px 24px rgba(255, 122, 0, 0.18);
+      }
+
+      .search-dropdown {
+        position: absolute; top: calc(100% + 10px); left: 0; right: 0; padding: 18px 20px 20px; display: none;
+        border: 1px solid var(--line); border-radius: 24px; background: rgba(255, 255, 255, 0.98); box-shadow: 0 22px 44px rgba(23, 32, 51, 0.12);
+      }
+      .searchbox.open .search-dropdown { display: block; }
+      .search-head, .hot-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+      .history-clear {
+        width: 34px; height: 34px; border: 0; border-radius: 999px; display: grid; place-items: center; cursor: pointer;
+        background: rgba(255, 122, 0, 0.12); color: var(--brand);
+      }
+      .history-icon { width: 16px; height: 16px; }
+      .history-list {
+        display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
+      }
+      .history-list.is-empty { display: none; }
+      .history-item {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 16px;
+        background: #eff3f9; color: var(--muted); cursor: pointer; transition: background .2s ease, color .2s ease, transform .2s ease;
+      }
+      .history-item:hover { background: #fff2e5; color: var(--text); transform: translateY(-1px); }
+      .history-label { display: flex; align-items: center; gap: 8px; min-width: 0; }
+      .history-label span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .history-delete {
+        width: 28px; height: 28px; border: 0; border-radius: 999px; display: grid; place-items: center; cursor: pointer;
+        background: rgba(32, 51, 84, 0.08); color: var(--muted); flex-shrink: 0;
+      }
+      .history-delete:hover { background: rgba(209, 67, 67, 0.12); color: #d14343; }
+      .hot-search { padding-top: 18px; }
+      .hot-tags { display: flex; flex-wrap: wrap; gap: 12px; }
+      .hot-tag {
+        display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px;
+        background: #fff3e8; color: #c46a18; font-weight: 700; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+      }
+      .hot-tag:hover { transform: translateY(-1px); background: #ffe6cf; box-shadow: 0 10px 22px rgba(255, 122, 0, 0.12); }
+      .hot-tag strong {
+        width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; background: rgba(255, 122, 0, 0.12); font-size: 0.82rem;
+      }
+
+      .account-actions { position: relative; }
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px;
+        border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.92); color: var(--text); font-weight: 700; cursor: pointer;
+      }
+      .account-menu {
+        position: absolute; top: calc(100% + 10px); right: 0; min-width: 200px; padding: 10px; display: none; flex-direction: column; gap: 6px;
+        border: 1px solid var(--line); border-radius: 20px; background: rgba(255, 255, 255, 0.98); box-shadow: var(--shadow); z-index: 30;
+      }
+      .account-actions.open .account-menu { display: flex; }
+      .account-menu a, .account-menu button {
+        min-height: 42px; padding: 0 14px; border: 0; border-radius: 14px; background: transparent; color: var(--muted); text-align: left; cursor: pointer; font-weight: 600;
+      }
+      .account-menu a:hover, .account-menu button:hover { background: var(--surface-muted); color: var(--text); }
+      .account-menu .danger-item { color: #d14343; background: rgba(209, 67, 67, 0.08); }
+      .account-menu .danger-item:hover { background: rgba(209, 67, 67, 0.14); color: #bf3030; }
+
+      .auth-modal-root {
+        position: fixed; inset: 0; z-index: 120; display: none; align-items: center; justify-content: center; padding: 20px;
+      }
+      .auth-modal-root.open { display: flex; }
+      .auth-backdrop {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at top, rgba(255,122,0,.14), transparent 34%), rgba(15,23,42,.42);
+        backdrop-filter: blur(10px);
+      }
+      .auth-modal {
+        position: relative; z-index: 1; width: min(100%, 560px); padding: 48px 48px 40px; border-radius: var(--radius-lg);
+        border: 1px solid var(--line); background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,248,242,.96)), #fff;
+        box-shadow: 0 24px 80px rgba(15,23,42,.18), 0 0 0 1px rgba(255,122,0,.04);
+      }
+      .auth-modal[hidden] { display: none; }
+      .auth-title { margin: 0; text-align: center; font-size: 1.7rem; font-weight: 700; }
+      .auth-close {
+        position: absolute; top: 18px; right: 18px; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 999px;
+        background: rgba(255,255,255,.92); color: var(--text); font-size: 1.7rem; font-weight: 700; line-height: 1; cursor: pointer;
+      }
+      .auth-form { margin-top: 24px; display: grid; gap: 12px; }
+      .auth-field {
+        display: grid; grid-template-columns: 130px 1fr; align-items: center; min-height: 60px; padding: 0 18px;
+        border: 1px solid var(--line); border-radius: 16px; background: rgba(245,247,251,.86);
+      }
+      .auth-field label { font-size: .98rem; font-weight: 600; }
+      .auth-field input { width: 100%; border: 0; outline: 0; text-align: right; background: transparent; }
+      .auth-actions { margin-top: 12px; display: grid; gap: 14px; }
+      .auth-actions.login-actions, .auth-actions.confirm-actions { grid-template-columns: 1fr 1fr; }
+      .auth-action {
+        min-height: 54px; border-radius: 999px; border: 1px solid var(--line); font-size: 1rem; font-weight: 700; cursor: pointer;
+      }
+      .auth-action-secondary { background: rgba(255,255,255,.92); color: var(--text); }
+      .auth-action-primary { border-color: transparent; background: linear-gradient(135deg, var(--brand), var(--brand-deep)); color: #fff; }
+      .auth-action-danger { border-color: transparent; background: linear-gradient(135deg, #e65f5f, #c93b3b); color: #fff; }
+      .auth-error { min-height: 22px; margin-top: 4px; color: #d14343; font-size: .9rem; font-weight: 600; }
+      .auth-copy { margin: 18px 0 0; color: var(--muted); text-align: center; line-height: 1.7; font-size: .96rem; }
+
+      .menu-bar {
+        padding: 14px 0;
+      }
+
+      .menu-list {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .menu-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        font-weight: 600;
+        white-space: nowrap;
+        flex: 0 0 auto;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      }
+
+      .menu-item:hover,
+      .menu-dropdown.open .menu-toggle {
+        color: var(--text);
+        border-color: rgba(255, 122, 0, 0.2);
+        background: #fff2e5;
+        transform: translateY(-1px);
+      }
+
+      .menu-item.active {
+        color: #fff;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+      }
+
+      .download-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 0 20px;
+        border: 1px solid rgba(255, 122, 0, 0.16);
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(255, 244, 234, 0.96), rgba(255, 232, 212, 0.96));
+        color: #b45c12;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: 0 12px 24px rgba(255, 122, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      }
+
+      .download-btn::before {
+        content: "⇩";
+        font-size: 0.92rem;
+        line-height: 1;
+      }
+
+      .download-btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 122, 0, 0.26);
+        color: #9f4e09;
+        box-shadow: 0 16px 30px rgba(255, 122, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      }
+      .category-btn::before {
+        content: "☷";
+        font-size: 0.9rem;
+        line-height: 1;
+      }
+
+
+      .menu-scroller {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .menu-list {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        scroll-behavior: smooth;
+        padding: 2px 0;
+        min-width: 0;
+        width: 100%;
+      }
+
+      .menu-list::-webkit-scrollbar {
+        display: none;
+      }
+
+      .menu-nav {
+        width: 42px;
+        height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--text);
+        font-size: 1.25rem;
+        cursor: pointer;
+        flex: 0 0 auto;
+      }
+
+      .menu-item-static {
+        cursor: not-allowed;
+      }
+
+      .menu-dropdown {
+        position: relative;
+        flex: 0 0 auto;
+      }
+
+      .menu-toggle {
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .menu-caret {
+        font-size: 0.82rem;
+        transition: transform 0.2s ease;
+      }
+
+      .menu-dropdown.open .menu-caret {
+        transform: rotate(180deg);
+      }
+
+      .submenu {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        min-width: 180px;
+        padding: 8px;
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: var(--shadow);
+        z-index: 10;
+      }
+
+      .menu-dropdown.open .submenu {
+        display: flex;
+      }
+
+      .submenu a {
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: var(--muted);
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+
+      .submenu a:hover {
+        color: var(--text);
+        background: var(--surface-muted);
+      }
+
+      .global-top-ads {
+        padding: 4px 0 14px;
+      }
+
+      .global-top-ad-track {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding: 4px 2px 6px;
+      }
+
+      .global-top-ad-track::-webkit-scrollbar {
+        display: none;
+      }
+
+      .global-top-ad-box {
+        flex: 0 0 84px;
+        min-width: 84px;
+        aspect-ratio: 1 / 1;
+        display: grid;
+        justify-items: center;
+        align-content: center;
+        gap: 8px;
+        padding: 10px 8px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255, 248, 242, 0.98), rgba(255, 255, 255, 0.94));
+        box-shadow: var(--shadow);
+      }
+
+      .global-top-ad-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .global-top-ad-name {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+
+      .page { padding: 18px 0 40px; }
+      .detail-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) 360px; gap: 22px; align-items: start; }
+      .panel {
+        padding: 22px 24px; border-radius: var(--radius-lg); border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow);
+      }
+      .player-shell { overflow: hidden; padding: 0; }
+      .player-box {
+        position: relative; aspect-ratio: 16 / 9; overflow: hidden;
+        background:
+          radial-gradient(circle at 22% 22%, rgba(255,255,255,.18), transparent 16%),
+          linear-gradient(145deg, rgba(255,122,0,.48), rgba(35,55,92,.88));
+      }
+      .player-box::before {
+        content: ""; position: absolute; inset: 14px; border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255,255,255,.14), transparent 28%);
+      }
+      .player-visual {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(circle at 22% 20%, rgba(255, 208, 160, 0.5), transparent 20%),
+          linear-gradient(145deg, rgba(255, 174, 107, 0.52), rgba(81, 101, 138, 0.86));
+      }
+      .player-preroll {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          linear-gradient(180deg, rgba(11, 18, 32, 0.18), rgba(11, 18, 32, 0.5)),
+          url("https://picsum.photos/seed/video-preroll/1280/720") center/cover no-repeat;
+        transition: opacity .3s ease, visibility .3s ease;
+      }
+      .player-preroll.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .preroll-copy {
+        max-width: 360px;
+        display: grid;
+        gap: 10px;
+        justify-items: center;
+        text-align: center;
+        color: #fff;
+      }
+      .preroll-kicker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+      }
+      .preroll-copy strong {
+        font-size: 1.75rem;
+        line-height: 1.3;
+      }
+      .preroll-copy p {
+        margin: 0;
+        color: rgba(255,255,255,.84);
+        line-height: 1.7;
+      }
+      .preroll-skip {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        min-height: 40px;
+        padding: 0 16px;
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.48);
+        color: #fff;
+        font-weight: 700;
+        backdrop-filter: blur(10px);
+      }
+      .player-overlay {
+        position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(180deg, rgba(11, 18, 32, 0.06), rgba(11, 18, 32, 0.28));
+        cursor: pointer;
+      }
+      .play-badge {
+        width: 94px; height: 94px; border: 1px solid rgba(255,255,255,.18); border-radius: 999px;
+        display: grid; place-items: center; color: #fff; font-size: 3rem;
+        background: rgba(255,255,255,.08); backdrop-filter: blur(14px); transition: transform .2s ease, background .2s ease;
+      }
+      .player-overlay:hover .play-badge { transform: scale(1.05); background: rgba(255,255,255,.14); }
+      .play-badge::before { content: "▶"; margin-left: 6px; }
+      .player-shell.is-playing .player-overlay { opacity: 0; pointer-events: none; }
+      .player-shell.is-playing .play-badge::before { content: "❚❚"; margin-left: 0; font-size: 2.4rem; }
+      .player-controls {
+        position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 3;
+        padding: 14px 16px 16px; border-radius: 22px; border: 1px solid rgba(255,255,255,.14);
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.16), rgba(15, 23, 42, 0.68));
+        backdrop-filter: blur(18px);
+      }
+      .progress-shell { position: relative; padding-top: 56px; }
+      .progress-track {
+        position: relative; height: 8px; border-radius: 999px; background: rgba(255,255,255,.18); cursor: pointer;
+      }
+      .progress-fill {
+        position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit;
+        background: linear-gradient(90deg, var(--brand), #ffb06a);
+      }
+      .progress-thumb {
+        position: absolute; top: 50%; left: 0; width: 20px; height: 20px; border: 3px solid #fff; border-radius: 999px;
+        background: linear-gradient(135deg, var(--brand), #ffb06a); box-shadow: 0 8px 18px rgba(255, 122, 0, 0.34);
+        transform: translate(-50%, -50%); cursor: grab;
+      }
+      .progress-thumb:active { cursor: grabbing; }
+      .preview-pop {
+        position: absolute; left: 0; bottom: 24px; width: 152px; padding: 8px; border-radius: 16px;
+        border: 1px solid rgba(255,255,255,.14); background: rgba(15, 23, 42, 0.9); color: #fff;
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.28); transform: translateX(-50%); opacity: 0; pointer-events: none;
+        transition: opacity .16s ease;
+      }
+      .preview-pop.visible { opacity: 1; }
+      .preview-frame {
+        aspect-ratio: 16 / 9; border-radius: 10px;
+        background:
+          radial-gradient(circle at var(--preview-x, 22%) 24%, rgba(255,255,255,.28), transparent 18%),
+          linear-gradient(135deg, rgba(255, 156, 91, 0.96), rgba(69, 87, 122, 0.94));
+      }
+      .preview-time {
+        margin-top: 7px; text-align: center; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em;
+      }
+      .controls-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 14px;
+      }
+      .controls-group { display: flex; align-items: center; gap: 10px; }
+      .player-btn {
+        position: relative;
+        min-width: 42px; height: 42px; padding: 0 14px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+        background: rgba(255,255,255,.08); color: #fff; font-size: 0.92rem; font-weight: 700;
+      }
+      .player-btn:hover { background: rgba(255,255,255,.14); }
+      .player-btn-label { font-size: 0.8rem; }
+      .time-readout { color: rgba(255,255,255,.84); font-size: 0.86rem; font-weight: 600; letter-spacing: 0.02em; }
+      .volume-wrap { position: relative; }
+      .volume-pop {
+        position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+        width: 58px; padding: 12px 0; border-radius: 18px; border: 1px solid rgba(255,255,255,.14);
+        display: none; justify-items: center; background: rgba(15, 23, 42, 0.92); box-shadow: 0 18px 36px rgba(15, 23, 42, 0.28);
+      }
+      .volume-wrap.open .volume-pop { display: grid; }
+      .volume-slider {
+        writing-mode: bt-lr; -webkit-appearance: slider-vertical; width: 28px; height: 128px; cursor: pointer;
+        accent-color: var(--brand);
+      }
+      .volume-value { margin-top: 8px; color: rgba(255,255,255,.88); font-size: 0.74rem; font-weight: 700; }
+      .video-heading { margin: 0; font-size: 1.85rem; line-height: 1.4; }
+      .video-meta {
+        margin-top: 14px; display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: .94rem;
+      }
+      .meta-pill {
+        display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px; border-radius: 999px;
+        background: var(--surface-muted); color: var(--muted); font-weight: 600;
+      }
+      .tag-row { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+      .tag {
+        padding: 8px 12px; border-radius: 999px; background: #fff4ea; color: #c46a18; font-size: .82rem; font-weight: 700;
+      }
+      .action-row { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 12px; }
+      .action-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px;
+        border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--text); cursor: pointer; font-weight: 700;
+      }
+      .action-btn.is-liked { color: #fff; border-color: transparent; background: linear-gradient(135deg, var(--brand), var(--brand-deep)); }
+      .video-desc { margin: 18px 0 0; color: var(--muted); line-height: 1.9; }
+      .section-title {
+        margin: 0 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      }
+      .section-title h2 { margin: 0; font-size: 1.3rem; }
+
+      .video-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .guess-list { display: grid; grid-template-columns: 1fr; gap: 16px; }
+      .recommend-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+      .video-card {
+        overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(255,255,255,.86);
+        box-shadow: var(--shadow); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      }
+      .video-card:hover { transform: translateY(-4px); border-color: rgba(255,122,0,.18); box-shadow: 0 18px 38px rgba(23,32,51,.12); }
+      .video-cover {
+        position: relative; aspect-ratio: 16 / 9;
+        background:
+          linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,.26)),
+          var(--video-image, url("https://picsum.photos/seed/videodetail-video/800/450")) center/cover no-repeat;
+      }
+      .video-cover::after { content: ""; position: absolute; inset: 14px; border-radius: 14px; background: linear-gradient(135deg, rgba(255,255,255,.16), transparent); }
+      .cover-metric {
+        position: absolute; right: 12px; bottom: 12px; z-index: 1; padding: 6px 10px; border-radius: 999px; background: rgba(23,32,51,.76);
+        color: #fff; font-size: .78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;
+      }
+      .cover-views { left: 12px; right: auto; }
+      .cover-likes { right: 12px; }
+      .cover-views::before { content: "▶"; font-size: .72rem; }
+      .cover-likes::before { content: "♥"; font-size: .76rem; }
+      .card-body { padding: 14px; }
+      .card-title { margin: 0; font-size: .92rem; line-height: 1.45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .mini-tags { display: flex; flex-wrap: nowrap; gap: 6px; margin-top: 10px; overflow: hidden; }
+      .mini-tag {
+        padding: 5px 8px; border-radius: 999px; background: var(--surface-muted); color: var(--muted);
+        font-size: .7rem; font-weight: 700; white-space: nowrap; flex: 0 1 auto;
+      }
+      .meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; color: var(--muted); font-size: .8rem; }
+      .meta-separator { width: 4px; height: 4px; border-radius: 999px; background: #b8c0cd; }
+      .guess-ad {
+        aspect-ratio: 1 / 1;
+        display: grid;
+        place-items: center;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: linear-gradient(145deg, rgba(255, 122, 0, 0.16), rgba(255, 122, 0, 0.04)), #fff;
+        box-shadow: var(--shadow);
+      }
+      .guess-ad-inner {
+        display: grid;
+        gap: 10px;
+        justify-items: center;
+        text-align: center;
+      }
+      .guess-ad-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 800;
+      }
+      .guess-ad-name {
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .comment-input {
+        display: grid; gap: 14px; padding: 18px; border-radius: 20px; background: #fff; border: 1px solid var(--line);
+      }
+      .comment-textarea {
+        width: 100%; min-height: 112px; resize: none; border: 0; outline: 0; background: transparent; color: var(--text); line-height: 1.8;
+      }
+      .comment-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); }
+      .comment-submit {
+        min-height: 42px; padding: 0 20px; border: 0; border-radius: 999px; background: linear-gradient(135deg, var(--brand), var(--brand-deep)); color: #fff; cursor: pointer; font-weight: 700;
+      }
+      .comment-submit:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+        background: #cfd7e4;
+        box-shadow: none;
+      }
+      .comment-list { margin-top: 18px; display: grid; gap: 14px; }
+      .comment-card {
+        padding: 18px; border-radius: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.88);
+      }
+      .comment-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+      .comment-author { font-weight: 700; }
+      .comment-time { color: var(--muted); font-size: .9rem; }
+      .comment-card p { margin: 0; color: var(--muted); line-height: 1.8; }
+
+      
+
+
+
+      .requirements-float {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 140;
+        min-height: 48px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+        color: #fff;
+        font-weight: 800;
+        box-shadow: 0 18px 38px rgba(255, 106, 0, 0.28);
+        cursor: pointer;
+      }
+      .requirements-modal-root {
+        position: fixed;
+        inset: 0;
+        z-index: 220;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .requirements-modal-root.open { display: flex; }
+      .requirements-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.48);
+        backdrop-filter: blur(10px);
+      }
+      .requirements-modal {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 860px);
+        max-height: min(86vh, 820px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+        padding: 26px;
+        border-radius: 28px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,248,242,.97)), #fff;
+        box-shadow: 0 28px 90px rgba(15, 23, 42, 0.24);
+      }
+      .requirements-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .requirements-title { margin: 0; font-size: 1.45rem; color: var(--text); }
+      .requirements-actions { display: flex; align-items: center; gap: 10px; }
+      .requirements-copy,
+      .requirements-save,
+      .requirements-close {
+        min-height: 40px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--text);
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .requirements-copy, .requirements-save { padding: 0 16px; }
+      .requirements-close { width: 40px; font-size: 1.2rem; }
+      .requirements-copy.is-success, .requirements-save.is-success { color: #fff; border-color: transparent; background: linear-gradient(135deg, #22c55e, #16a34a); }
+      .requirements-copy.is-error, .requirements-save.is-error { color: #fff; border-color: transparent; background: linear-gradient(135deg, #ef4444, #dc2626); }
+      .requirements-content { display: grid; gap: 14px; }
+      .requirements-content[contenteditable="true"] {
+        padding: 4px;
+        border-radius: 22px;
+        outline: 2px dashed rgba(255, 122, 0, 0.22);
+        outline-offset: 6px;
+      }
+      .requirements-content[contenteditable="true"]:focus {
+        outline-color: rgba(255, 122, 0, 0.5);
+      }
+      .requirements-status { min-height: 20px; margin-top: 12px; color: var(--muted); font-size: 0.88rem; }
+      .requirements-status.is-success { color: #16a34a; }
+      .requirements-status.is-error { color: #dc2626; }
+      .requirements-card {
+        padding: 18px;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,.78);
+      }
+      .requirements-card h3 { margin: 0 0 12px; font-size: 1.04rem; }
+      .requirements-card p,
+      .requirements-card li { color: var(--muted); line-height: 1.78; font-size: .94rem; }
+      .requirements-card p { margin: 0 0 8px; }
+      .requirements-card ul { margin: 0; padding-left: 20px; }
+      @media (max-width: 780px) {
+        .requirements-float { right: 14px; bottom: 14px; min-height: 42px; padding: 0 14px; font-size: .88rem; }
+        .requirements-modal-root { padding: 14px; }
+        .requirements-modal { padding: 20px; border-radius: 22px; }
+        .requirements-head { align-items: flex-start; flex-direction: column; }
+        .requirements-actions { width: 100%; }
+        .requirements-copy { flex: 1; }
+      }
+      .bottom-ad-section { margin: 32px auto 0; }
+      .bottom-ad { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+      .bottom-ad-item {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 72px; padding: 14px 16px;
+        border-radius: 10px; border: 1px solid rgba(255,255,255,.06); background: linear-gradient(180deg, #212121, #171717); box-shadow: 0 10px 22px rgba(0,0,0,.16);
+      }
+      .bottom-ad-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+      .bottom-ad-logo {
+        width: 26px; height: 26px; flex: 0 0 auto; border-radius: 999px; display: grid; place-items: center; color: #111;
+        font-size: .72rem; font-weight: 800; background: linear-gradient(135deg, #ffb347, #ff7a00);
+      }
+      .bottom-ad-logo.blue { background: linear-gradient(135deg, #5cc8ff, #2f80ed); }
+      .bottom-ad-logo.gold { background: linear-gradient(135deg, #f7d154, #d89b00); }
+      .bottom-ad-logo.purple { background: linear-gradient(135deg, #8f7bff, #5b34ff); }
+      .bottom-ad-text { min-width: 0; color: #f3f3f3; font-size: .92rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .bottom-ad-arrow {
+        flex: 0 0 auto; width: 20px; height: 20px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2);
+        display: grid; place-items: center; color: rgba(255,255,255,.78); font-size: .8rem;
+      }
+      @media (max-width: 1180px) { .bottom-ad { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 780px) { .bottom-ad { grid-template-columns: 1fr; } }
+.footer { margin-top: 32px; padding: 28px 0 40px; border-top: 1px solid var(--line); }
+      .footer-grid { display: grid; grid-template-columns: 1.3fr repeat(3, 1fr); gap: 18px; }
+      .footer-card { padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--line); background: rgba(255,255,255,.72); }
+      .footer-card h3 { margin: 0 0 10px; font-size: 1rem; }
+      .footer-card p, .footer-card a { margin: 0; color: var(--muted); line-height: 1.7; font-size: .92rem; }
+      .footer-action {
+        display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border-radius: 999px;
+        border: 1px solid var(--line); background: #fff; color: var(--text); font-weight: 700;
+      }
+
+      @media (max-width: 1180px) {
+        .topbar-inner { flex-wrap: wrap; }
+        .detail-layout { grid-template-columns: 1fr; }
+        .recommend-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .footer-grid, .history-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+
+      @media (max-width: 780px) {
+        .container { width: min(var(--wrap), calc(100% - 20px)); }
+        .history-list, .video-grid, .guess-list, .recommend-grid, .footer-grid { grid-template-columns: 1fr; }
+        .account-actions, .btn { width: 100%; }
+        .account-menu { left: 0; right: 0; min-width: 0; }
+        .auth-modal { padding: 40px 18px 24px; }
+        .auth-field { grid-template-columns: 88px 1fr; min-height: 54px; padding: 0 14px; }
+        .auth-actions.login-actions, .auth-actions.confirm-actions { grid-template-columns: 1fr; }
+        .video-heading { font-size: 1.45rem; }
+        .comment-foot { align-items: flex-start; flex-direction: column; }
+        .player-controls { left: 12px; right: 12px; bottom: 12px; padding: 12px; }
+        .controls-row { flex-direction: column; align-items: stretch; }
+        .controls-group { justify-content: space-between; flex-wrap: wrap; }
+        .progress-shell { padding-top: 48px; }
+        .preview-pop { width: 132px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="logo" href="index.html">
+          <span class="logo-mark">P</span>
+          <span class="logo-text"><strong>产品名称</strong></span>
+        </a>
+        <div class="searchbox">
+          <label class="searchbar">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4.5a6 6 0 1 0 0 12a6 6 0 0 0 0-12Zm0-1.5a7.5 7.5 0 1 1 4.74 13.32l4.22 4.21a.75.75 0 1 1-1.06 1.06l-4.21-4.22A7.5 7.5 0 0 1 10.5 3Z" fill="currentColor"/></svg>
+            <input type="text" placeholder="搜索关键字" />
+            <button class="search-submit" type="button">搜索</button>
+          </label>
+          <div class="search-dropdown">
+            <div class="search-head">
+              <strong>历史记录</strong>
+              <button class="history-clear" type="button" aria-label="清空历史记录">
+                <svg class="history-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3.75A2.25 2.25 0 0 0 6.75 6v.75H4.5a.75.75 0 0 0 0 1.5h.84l.73 9.39A2.25 2.25 0 0 0 8.31 19.5h7.38a2.25 2.25 0 0 0 2.24-1.86l.73-9.39h.84a.75.75 0 0 0 0-1.5h-2.25V6A2.25 2.25 0 0 0 15 3.75H9Zm6.75 3H8.25V6A.75.75 0 0 1 9 5.25h6a.75.75 0 0 1 .75.75v.75ZM9.75 10.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5a.75.75 0 0 1 .75-.75Zm4.5 0a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5a.75.75 0 0 1 .75-.75Z" fill="currentColor"/></svg>
+              </button>
+            </div>
+            <div class="history-list"></div>
+            <div class="hot-search">
+              <div class="hot-head"><strong>热门搜索</strong></div>
+              <div class="hot-tags">
+                <button class="hot-tag" type="button"><strong>1</strong><span>热门频道</span></button>
+                <button class="hot-tag" type="button"><strong>2</strong><span>今日更新</span></button>
+                <button class="hot-tag" type="button"><strong>3</strong><span>精品视频</span></button>
+                <button class="hot-tag" type="button"><strong>4</strong><span>剧情专区</span></button>
+                <button class="hot-tag" type="button"><strong>5</strong><span>平台榜单</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a class="download-btn category-btn" href="all-categories.html">全部分类</a>
+        <button class="download-btn" type="button">APP下载</button>
+        <div class="account-actions">
+          <button class="btn account-trigger" type="button" aria-expanded="false"><span class="account-label">登录</span></button>
+          <div class="account-menu" hidden>
+            <a href="watch-history.html">观看历史</a>
+            <a href="my-likes.html">我的点赞</a>
+            <button class="danger-item" type="button" data-logout>退出账号</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container menu-bar">
+      <div class="menu-scroller">
+        <button class="menu-nav menu-nav-prev" type="button" aria-label="向左切换菜单">‹</button>
+      <nav class="menu-list" data-menu-scroll>
+        <a class="menu-item" data-menu="home" href="index.html">首页</a>
+        <a class="menu-item" data-menu="post-a" href="post-list.html?menu=post-a">一级菜单A（帖子）</a>
+        <a class="menu-item" data-menu="video-b" href="video-list.html?menu=video-b">一级菜单B（视频）</a>
+        <a class="menu-item" data-menu="video-c" href="video-list.html?menu=video-c">一级菜单C（视频）</a>
+        <a class="menu-item" data-menu="video-d" href="video-list.html?menu=video-d">一级菜单D（视频）</a>
+        <div class="menu-dropdown">
+          <button class="menu-item menu-toggle" data-menu="menu-e" type="button" aria-expanded="false"><span>一级菜单E</span><span class="menu-caret">⌄</span></button>
+          <div class="submenu">
+            <a href="video-list.html?menu=menu-e">二级菜单 E-1</a>
+            <a href="video-list.html?menu=menu-e">二级菜单 E-2</a>
+            <a href="video-list.html?menu=menu-e">二级菜单 E-3</a>
+          </div>
+        </div>
+        <a class="menu-item" data-menu="novel-f" href="novel-list.html?menu=novel-f">一级菜单F（小说）</a>
+      <button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button></nav>
+        <button class="menu-nav menu-nav-next" type="button" aria-label="向右切换菜单">›</button>
+      </div>
+    </div>
+
+    <section class="global-top-ads">
+      <div class="container">
+        <div class="global-top-ad-track" aria-label="顶部广告栏">
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">AI</span><span class="global-top-ad-name">广告A</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">HD</span><span class="global-top-ad-name">广告B</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">MV</span><span class="global-top-ad-name">广告C</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">UP</span><span class="global-top-ad-name">广告D</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">EX</span><span class="global-top-ad-name">广告E</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">SH</span><span class="global-top-ad-name">广告F</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">VR</span><span class="global-top-ad-name">广告G</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">TV</span><span class="global-top-ad-name">广告H</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">CL</span><span class="global-top-ad-name">广告I</span></div>
+          <div class="global-top-ad-box"><span class="global-top-ad-icon">RT</span><span class="global-top-ad-name">广告J</span></div>
+        </div>
+      </div>
+    </section>
+
+    <main class="container page">
+      <div class="detail-layout">
+        <div class="main-stack">
+          <section class="panel player-shell">
+            <div class="player-box">
+              <div class="player-visual"></div>
+              <div class="player-preroll" id="playerPreroll">
+                <button class="preroll-skip" id="prerollSkip" type="button" disabled>广告 2s</button>
+                <div class="preroll-copy">
+                  <span class="preroll-kicker">品牌推荐</span>
+                  <strong>这里展示视频前贴片广告内容</strong>
+                  <p>广告将在 2 秒后自动关闭，关闭后即可正常观看视频内容。</p>
+                </div>
+              </div>
+              <button class="player-overlay" type="button" aria-label="播放或暂停视频">
+                <span class="play-badge"></span>
+              </button>
+              <div class="player-controls">
+                <div class="progress-shell">
+                  <div class="preview-pop" id="previewPop" aria-hidden="true">
+                    <div class="preview-frame" id="previewFrame"></div>
+                    <div class="preview-time" id="previewTime">00:00</div>
+                  </div>
+                  <div class="progress-track" id="progressTrack" aria-label="视频进度条">
+                    <div class="progress-fill" id="progressFill"></div>
+                    <button class="progress-thumb" id="progressThumb" type="button" aria-label="拖动进度"></button>
+                  </div>
+                </div>
+                <div class="controls-row">
+                  <div class="controls-group">
+                    <button class="player-btn" id="playToggle" type="button" aria-label="播放或暂停">▶</button>
+                    <button class="player-btn" id="rewindButton" type="button" aria-label="后退15秒">-15s</button>
+                    <button class="player-btn" id="forwardButton" type="button" aria-label="快进15秒">+15s</button>
+                    <span class="time-readout" id="timeReadout">00:00 / 12:48</span>
+                  </div>
+                  <div class="controls-group">
+                    <div class="volume-wrap" id="volumeWrap">
+                      <button class="player-btn" id="volumeButton" type="button" aria-label="调节音量">🔊</button>
+                      <div class="volume-pop" id="volumePop">
+                        <input class="volume-slider" id="volumeSlider" type="range" min="0" max="100" step="1" value="72" aria-label="音量调节" />
+                        <span class="volume-value" id="volumeValue">72%</span>
+                      </div>
+                    </div>
+                    <button class="player-btn" id="fullscreenButton" type="button" aria-label="全屏播放">⛶</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h1 class="video-heading">视频详情标题示例，展示完整视频播放器与基础信息区域</h1>
+            <div class="video-meta">
+              <span class="meta-pill">上架时间：2026-04-18</span>
+              <span class="meta-pill">播放量：18.6万</span>
+              <span class="meta-pill">点赞：2.4k</span>
+              <span class="meta-pill">时长：08:36</span>
+            </div>
+            <div class="tag-row">
+              <a class="tag" href="search-results.html?q=精品视频&type=video&sort=latest&page=1">精品视频</a>
+              <a class="tag" href="search-results.html?q=今日更新&type=video&sort=latest&page=1">今日更新</a>
+              <a class="tag" href="search-results.html?q=热门推荐&type=video&sort=latest&page=1">热门推荐</a>
+            </div>
+            <div class="action-row">
+              <button class="action-btn like-btn" type="button"><span>♥</span><span class="like-text">点赞 2.4k</span></button>
+              <button class="action-btn share-btn" type="button"><span>↗</span><span>分享视频</span></button>
+            </div>
+            <p class="video-desc">
+              这里展示视频的基础说明文案，用于承载视频简介、更新说明、标签解读和补充信息。当前为静态原型页面，
+              重点是播放器、互动按钮、评论区和推荐视频区的完整结构，便于继续延展为真实内容详情页。
+            </p>
+          </section>
+
+          <section class="panel">
+            <div class="section-title"><h2>评论功能</h2></div>
+            <div class="comment-input">
+              <textarea class="comment-textarea" maxlength="50" placeholder="写下你的评论，最多 50 个字"></textarea>
+              <div class="comment-foot">
+                <span class="comment-count">0 / 50</span>
+                <button class="comment-submit" type="button" disabled>发表评论</button>
+              </div>
+            </div>
+            <div class="comment-list" id="commentList">
+              <article class="comment-card">
+                <div class="comment-head"><strong class="comment-author">用户A</strong><span class="comment-time">2026-04-18 18:20</span></div>
+                <p>这条视频详情页的结构已经比较完整，播放器、推荐区和评论区的分层很清楚。</p>
+              </article>
+              <article class="comment-card">
+                <div class="comment-head"><strong class="comment-author">用户B</strong><span class="comment-time">2026-04-18 18:46</span></div>
+                <p>可以继续接真实播放数据和评论接口，现在作为前端原型已经足够演示交互。</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title"><h2>推荐视频列表</h2></div>
+            <div class="recommend-grid" id="recommendGrid"></div>
+          </section>
+        </div>
+
+        <aside class="side-stack">
+          <section class="panel">
+            <div class="section-title"><h2>猜你喜欢视频列表</h2></div>
+            <div class="guess-list" id="guessGrid"></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    
+    <section class="container bottom-ad-section">
+      <div class="bottom-ad">
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo blue">HL</span><span class="bottom-ad-text">热点资讯网</span></span><span class="bottom-ad-arrow">›</span></a>
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo gold">SH</span><span class="bottom-ad-text">中国站点</span></span><span class="bottom-ad-arrow">›</span></a>
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo">91</span><span class="bottom-ad-text">男同频道</span></span><span class="bottom-ad-arrow">›</span></a>
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo blue">HD</span><span class="bottom-ad-text">海岛社区</span></span><span class="bottom-ad-arrow">›</span></a>
+        <a class="bottom-ad-item" href="#"><span class="bottom-ad-main"><span class="bottom-ad-logo purple">91</span><span class="bottom-ad-text">91精选</span></span><span class="bottom-ad-arrow">›</span></a>
+      </div>
+    </section>
+
+<footer class="footer">
+      <div class="container footer-grid">
+        <section class="footer-card"><h3>产品名称</h3><p>这里展示产品名称与品牌说明，用于统一页脚识别和平台基础信息呈现。</p></section>
+        <section class="footer-card"><h3>联系客服</h3><p><a class="footer-action" href="#">在线客服入口</a></p></section>
+        <section class="footer-card"><h3>官方群组</h3><p><a class="footer-action" href="#">进入官方群组</a></p></section>
+        <section class="footer-card"><h3>商务合作</h3><p><a class="footer-action" href="#">商务合作入口</a></p></section>
+      </div>
+    </footer>
+
+
+
+
+    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
+    <div class="requirements-modal-root" aria-hidden="true">
+      <div class="requirements-backdrop" data-close-requirements></div>
+      <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
+        <div class="requirements-head">
+          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
+          <div class="requirements-actions">
+            <button class="requirements-copy" type="button" data-copy-requirements>复制需求说明</button>
+            <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
+            <button class="requirements-close" type="button" data-close-requirements aria-label="关闭需求说明">×</button>
+          </div>
+        </div>
+        <div class="requirements-content" contenteditable="true" spellcheck="false">
+          <section class="requirements-card">
+            <h3>页面概述</h3>
+            <ul>
+              <li>视频详情页用于展示视频播放、视频信息、推荐内容和评论互动。</li>
+            </ul>
+          </section>
+          <section class="requirements-card">
+            <h3>核心模块</h3>
+            <ul>
+              <li>顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。</li>
+              <li>视频播放器比例为 16:9，播放前展示铺满播放器的前置广告，倒计时 2 秒后消失。</li>
+              <li>播放器包含播放按钮、进度条、可拖动锚点、截图预览、音量控制、全屏、快进 15 秒和后退 15 秒。</li>
+              <li>视频基础信息展示标题、标签、播放量、点赞和分享功能。</li>
+              <li>猜你喜欢视频列表展示 1 列多条数据，列表底部包含 1:1 广告位。</li>
+              <li>评论功能位于推荐视频上方。</li>
+              <li>推荐视频列表展示 4 列视频卡片。</li>
+            </ul>
+          </section>
+          <section class="requirements-card">
+            <h3>交互规则</h3>
+            <ul>
+              <li>点击视频标签跳转搜索结果页，并选中视频分类。</li>
+              <li>点赞按钮可切换点赞状态。</li>
+              <li>评论输入为空时评论按钮置灰，最多输入 50 个字。</li>
+            </ul>
+          </section>
+        </div>
+        <div class="requirements-status" data-requirements-status>文案可直接编辑，点击“保存文案”后会保存在当前浏览器。</div>
+      </section>
+      <script type="text/plain" data-requirements-copy-text>视频详情页需求说明
+
+页面概述
+- 视频详情页用于展示视频播放、视频信息、推荐内容和评论互动。
+
+核心模块
+- 顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。
+- 视频播放器比例为 16:9，播放前展示铺满播放器的前置广告，倒计时 2 秒后消失。
+- 播放器包含播放按钮、进度条、可拖动锚点、截图预览、音量控制、全屏、快进 15 秒和后退 15 秒。
+- 视频基础信息展示标题、标签、播放量、点赞和分享功能。
+- 猜你喜欢视频列表展示 1 列多条数据，列表底部包含 1:1 广告位。
+- 评论功能位于推荐视频上方。
+- 推荐视频列表展示 4 列视频卡片。
+
+交互规则
+- 点击视频标签跳转搜索结果页，并选中视频分类。
+- 点赞按钮可切换点赞状态。
+- 评论输入为空时评论按钮置灰，最多输入 50 个字。</script>
+    </div>
+
+    <div class="auth-modal-root" aria-hidden="true">
+      <div class="auth-backdrop"></div>
+      <section class="auth-modal" data-modal="login">
+        <h2 class="auth-title">登录</h2>
+        <form class="auth-form" data-auth-form="login">
+          <div class="auth-field"><label for="loginAccount">账号</label><input id="loginAccount" name="account" type="text" placeholder="请输入账号" /></div>
+          <div class="auth-field"><label for="loginPassword">密码</label><input id="loginPassword" name="password" type="password" placeholder="请输入密码" /></div>
+          <div class="auth-actions login-actions">
+            <button class="auth-action auth-action-secondary" type="button" data-open-register>注册</button>
+            <button class="auth-action auth-action-primary" type="submit">登录</button>
+          </div>
+          <p class="auth-error" data-auth-error="login"></p>
+        </form>
+      </section>
+      <section class="auth-modal" data-modal="register" hidden>
+        <button class="auth-close" type="button" data-close-auth aria-label="关闭">×</button>
+        <h2 class="auth-title">注册</h2>
+        <form class="auth-form" data-auth-form="register">
+          <div class="auth-field"><label for="registerAccount">账号</label><input id="registerAccount" name="account" type="text" placeholder="请输入账号" /></div>
+          <div class="auth-field"><label for="registerPassword">密码</label><input id="registerPassword" name="password" type="password" placeholder="包含大小写字母与数字" /></div>
+          <div class="auth-field"><label for="registerConfirm">确认密码</label><input id="registerConfirm" name="confirmPassword" type="password" placeholder="包含大小写字母与数字" /></div>
+          <div class="auth-actions"><button class="auth-action auth-action-primary" type="submit">注册</button></div>
+        </form>
+      </section>
+      <section class="auth-modal" data-modal="logout-confirm" hidden>
+        <h2 class="auth-title">退出账号</h2>
+        <p class="auth-copy">确认退出当前账号吗？</p>
+        <div class="auth-actions confirm-actions">
+          <button class="auth-action auth-action-secondary" type="button" data-cancel-logout>取消</button>
+          <button class="auth-action auth-action-danger" type="button" data-confirm-logout>确认退出</button>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const menuDropdown = document.querySelector(".menu-dropdown");
+      const menuToggle = document.querySelector(".menu-toggle");
+      const menuItems = Array.from(document.querySelectorAll(".menu-list .menu-item[data-menu]"));
+      const menuScroll = document.querySelector("[data-menu-scroll]");
+      const menuPrev = document.querySelector(".menu-nav-prev");
+      const menuNext = document.querySelector(".menu-nav-next");
+      const menuSearchParams = new URLSearchParams(window.location.search);
+      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e", "novel-f"]);
+
+      const resolveActiveMenu = () => {
+        const { pathname } = window.location;
+        const menuParam = menuSearchParams.get("menu");
+        if (menuParam && validMenus.has(menuParam)) return menuParam;
+        if (pathname.endsWith("/index.html") || pathname.endsWith("index.html")) return "home";
+        if (pathname.endsWith("/video-list.html") || pathname.endsWith("video-list.html")) return "video-b";
+        if (pathname.endsWith("/post-list.html") || pathname.endsWith("post-list.html")) return "post-a";
+        if (pathname.endsWith("/novel-list.html") || pathname.endsWith("novel-list.html")) return "novel-f";
+        if (pathname.endsWith("/novel-detail.html") || pathname.endsWith("novel-detail.html")) return "novel-f";
+        if (
+          pathname.endsWith("/search-results.html") ||
+          pathname.endsWith("search-results.html") ||
+          pathname.endsWith("/video-detail.html") ||
+          pathname.endsWith("video-detail.html")
+        ) {
+          return menuSearchParams.get("type") === "post" ? "post-a" : "video-b";
+        }
+        if (
+          pathname.endsWith("/watch-history.html") ||
+          pathname.endsWith("watch-history.html") ||
+          pathname.endsWith("/my-likes.html") ||
+          pathname.endsWith("my-likes.html") ||
+          pathname.endsWith("/dynamic-detail.html") ||
+          pathname.endsWith("dynamic-detail.html")
+        ) {
+          return "post-a";
+        }
+        return null;
+      };
+
+      menuItems.forEach((item) => item.classList.toggle("active", item.dataset.menu === resolveActiveMenu()));
+      menuPrev?.addEventListener("click", () => menuScroll?.scrollBy({ left: -280, behavior: "smooth" }));
+      menuNext?.addEventListener("click", () => menuScroll?.scrollBy({ left: 280, behavior: "smooth" }));
+
+      if (menuDropdown && menuToggle) {
+        const submenu = menuDropdown.querySelector(".submenu");
+        const closeMenuDropdown = () => {
+          menuDropdown.classList.remove("open");
+          menuToggle.setAttribute("aria-expanded", "false");
+        };
+        const positionSubmenu = () => {
+          if (!submenu) return;
+          const rect = menuToggle.getBoundingClientRect();
+          submenu.style.position = "fixed";
+          submenu.style.top = `${rect.bottom + 10}px`;
+          submenu.style.left = `${rect.left}px`;
+          submenu.style.minWidth = `${Math.max(180, rect.width)}px`;
+        };
+        menuToggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const isOpen = menuDropdown.classList.toggle("open");
+          menuToggle.setAttribute("aria-expanded", String(isOpen));
+          if (isOpen) positionSubmenu();
+        });
+        submenu?.addEventListener("click", (event) => event.stopPropagation());
+        window.addEventListener("resize", () => {
+          if (menuDropdown.classList.contains("open")) positionSubmenu();
+        });
+        window.addEventListener("scroll", () => {
+          if (menuDropdown.classList.contains("open")) positionSubmenu();
+        }, true);
+        document.addEventListener("click", (event) => {
+          if (!menuDropdown.contains(event.target)) closeMenuDropdown();
+        });
+      }
+
+      const searchBox = document.querySelector(".searchbox");
+      const searchInput = document.querySelector(".searchbar input");
+      const searchSubmit = document.querySelector(".search-submit");
+      const historyList = document.querySelector(".history-list");
+      const clearHistoryBtn = document.querySelector(".history-clear");
+      const hotTags = Array.from(document.querySelectorAll(".hot-tag"));
+      let searchHistory = ["最新上架", "热门专题", "剧情合集", "会员推荐"];
+
+      const navigateToSearch = (keyword, type = "post", sort = "latest", page = "1") => {
+        const q = keyword.trim();
+        if (!q) return;
+        const params = new URLSearchParams({ q, type, sort, page });
+        window.location.href = `search-results.html?${params.toString()}`;
+      };
+
+      const renderHistory = () => {
+        if (!historyList) return;
+        if (!searchHistory.length) {
+          historyList.innerHTML = "";
+          historyList.classList.add("is-empty");
+          return;
+        }
+        historyList.classList.remove("is-empty");
+        historyList.innerHTML = searchHistory.map((item, index) => `
+          <div class="history-item">
+            <div class="history-label"><span>⏱</span><span>${item}</span></div>
+            <button class="history-delete" type="button" data-index="${index}" aria-label="删除历史记录">×</button>
+          </div>`).join("");
+      };
+
+      if (searchBox && searchInput && searchSubmit && historyList && clearHistoryBtn) {
+        renderHistory();
+        const openSearch = () => searchBox.classList.add("open");
+        searchInput.addEventListener("focus", openSearch);
+        searchInput.addEventListener("click", openSearch);
+        searchBox.querySelector(".searchbar").addEventListener("click", openSearch);
+        historyList.addEventListener("click", (event) => {
+          const deleteButton = event.target.closest(".history-delete");
+          const historyItem = event.target.closest(".history-item");
+          if (deleteButton) {
+            event.stopPropagation();
+            searchHistory.splice(Number(deleteButton.dataset.index), 1);
+            renderHistory();
+            openSearch();
+            return;
+          }
+          if (historyItem) {
+            const text = historyItem.querySelector(".history-label span:last-child")?.textContent || "";
+            searchInput.value = text;
+            navigateToSearch(text);
+          }
+        });
+        clearHistoryBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          searchHistory = [];
+          renderHistory();
+          openSearch();
+        });
+        hotTags.forEach((tag) => tag.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const text = tag.textContent.replace(/^\d+/, "").trim();
+          searchInput.value = text;
+          searchHistory = [text, ...searchHistory.filter((item) => item !== text)].slice(0, 6);
+          renderHistory();
+          navigateToSearch(text);
+        }));
+        searchSubmit.addEventListener("click", (event) => {
+          event.stopPropagation();
+          navigateToSearch(searchInput.value, "video");
+        });
+        searchInput.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            navigateToSearch(searchInput.value, "video");
+          }
+        });
+        document.addEventListener("click", (event) => {
+          if (!searchBox.contains(event.target)) searchBox.classList.remove("open");
+        });
+      }
+
+      const ACCOUNT_STORAGE_KEY = "platformUserState";
+      const accountActions = document.querySelector(".account-actions");
+      const accountTrigger = document.querySelector(".account-trigger");
+      const accountLabel = document.querySelector(".account-label");
+      const accountMenu = document.querySelector(".account-menu");
+      const logoutButton = document.querySelector("[data-logout]");
+      const authModalRoot = document.querySelector(".auth-modal-root");
+      const loginModal = document.querySelector('[data-modal="login"]');
+      const registerModal = document.querySelector('[data-modal="register"]');
+      const logoutConfirmModal = document.querySelector('[data-modal="logout-confirm"]');
+      const loginForm = document.querySelector('[data-auth-form="login"]');
+      const registerForm = document.querySelector('[data-auth-form="register"]');
+      const loginError = document.querySelector('[data-auth-error="login"]');
+      const openRegisterBtn = document.querySelector("[data-open-register]");
+      const cancelLogoutButton = document.querySelector("[data-cancel-logout]");
+      const confirmLogoutButton = document.querySelector("[data-confirm-logout]");
+      const closeAuthButtons = Array.from(document.querySelectorAll("[data-close-auth]"));
+
+      let accountState = { loggedIn: false, username: "" };
+      try {
+        const savedState = JSON.parse(window.localStorage.getItem(ACCOUNT_STORAGE_KEY) || "null");
+        if (savedState?.loggedIn) accountState = { loggedIn: true, username: savedState.username || "用户" };
+      } catch (error) {
+        accountState = { loggedIn: false, username: "" };
+      }
+
+      const saveAccountState = () => window.localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify(accountState));
+      const closeAccountMenu = () => {
+        if (!accountActions || !accountTrigger) return;
+        accountActions.classList.remove("open");
+        accountTrigger.setAttribute("aria-expanded", "false");
+      };
+      const renderAccountState = () => {
+        if (!accountTrigger || !accountLabel || !accountMenu) return;
+        accountLabel.textContent = accountState.loggedIn ? "个人中心" : "登录";
+        accountMenu.hidden = !accountState.loggedIn;
+        if (!accountState.loggedIn) closeAccountMenu();
+      };
+      const closeAuthModal = () => {
+        authModalRoot.classList.remove("open");
+        authModalRoot.setAttribute("aria-hidden", "true");
+        loginModal.hidden = true;
+        registerModal.hidden = true;
+        logoutConfirmModal.hidden = true;
+        document.body.classList.remove("modal-open");
+        if (loginError) loginError.textContent = "";
+      };
+      const openAuthModal = (type) => {
+        closeAccountMenu();
+        menuDropdown?.classList.remove("open");
+        menuToggle?.setAttribute("aria-expanded", "false");
+        searchBox?.classList.remove("open");
+        authModalRoot.classList.add("open");
+        authModalRoot.setAttribute("aria-hidden", "false");
+        loginModal.hidden = type !== "login";
+        registerModal.hidden = type !== "register";
+        logoutConfirmModal.hidden = type !== "logout-confirm";
+        document.body.classList.add("modal-open");
+      };
+      const loginSuccess = (username) => {
+        accountState = { loggedIn: true, username: username || "用户" };
+        saveAccountState();
+        renderAccountState();
+        closeAuthModal();
+      };
+      const registerSuccess = () => {
+        accountState = { loggedIn: false, username: "" };
+        saveAccountState();
+        renderAccountState();
+        closeAuthModal();
+      };
+      const logout = () => {
+        accountState = { loggedIn: false, username: "" };
+        saveAccountState();
+        renderAccountState();
+        closeAccountMenu();
+      };
+
+      if (accountTrigger && accountActions && accountMenu) {
+        renderAccountState();
+        accountTrigger.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (!accountState.loggedIn) {
+            openAuthModal("login");
+            return;
+          }
+          const isOpen = accountActions.classList.toggle("open");
+          accountTrigger.setAttribute("aria-expanded", String(isOpen));
+          searchBox?.classList.remove("open");
+          menuDropdown?.classList.remove("open");
+          menuToggle?.setAttribute("aria-expanded", "false");
+        });
+        accountMenu.addEventListener("click", (event) => event.stopPropagation());
+        document.addEventListener("click", (event) => {
+          if (!accountActions.contains(event.target)) closeAccountMenu();
+        });
+      }
+
+      openRegisterBtn?.addEventListener("click", () => openAuthModal("register"));
+      closeAuthButtons.forEach((button) => button.addEventListener("click", closeAuthModal));
+      logoutButton?.addEventListener("click", () => openAuthModal("logout-confirm"));
+      cancelLogoutButton?.addEventListener("click", closeAuthModal);
+      confirmLogoutButton?.addEventListener("click", () => {
+        closeAuthModal();
+        logout();
+      });
+      authModalRoot?.addEventListener("click", (event) => {
+        if (event.target === authModalRoot || event.target.classList.contains("auth-backdrop")) closeAuthModal();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && authModalRoot?.classList.contains("open")) closeAuthModal();
+      });
+      loginForm?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+        const account = String(formData.get("account") || "").trim();
+        const password = String(formData.get("password") || "").trim();
+        if (!account || !password) {
+          if (loginError) loginError.textContent = "请输入账号和密码";
+          return;
+        }
+        if (loginError) loginError.textContent = "";
+        loginSuccess(account);
+        loginForm.reset();
+      });
+      registerForm?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(registerForm);
+        const account = String(formData.get("account") || "").trim();
+        const password = String(formData.get("password") || "").trim();
+        const confirmPassword = String(formData.get("confirmPassword") || "").trim();
+        if (!account || !password || password !== confirmPassword) return;
+        registerSuccess();
+        registerForm.reset();
+      });
+
+      const buildVideoCards = (container, prefix, count, includeAd = false) => {
+        const items = Array.from({ length: count }, (_, index) => ({
+          title: `${prefix}标题示例 ${index + 1}`,
+          likes: 900 + index * 170,
+          views: 98000 + index * 6200,
+          date: `2026-04-${String(index + 12).padStart(2, "0")}`,
+          tags: ["标签一", "标签二", "标签三"],
+        }));
+        container.innerHTML = items.map((item) => `
+          <article class="video-card">
+            <a href="video-detail.html">
+              <div class="video-cover"><span class="cover-metric cover-views">${item.views >= 10000 ? (item.views / 10000).toFixed(1) + "万" : item.views}</span><span class="cover-metric cover-likes">${item.likes >= 1000 ? (item.likes / 1000).toFixed(1) + "k" : item.likes}</span></div>
+            </a>
+            <div class="card-body">
+              <h3 class="card-title"><a href="video-detail.html">${item.title}</a></h3>
+              <div class="mini-tags">${item.tags.map((tag) => `<span class="mini-tag">${tag}</span>`).join("")}</div>
+            </div>
+          </article>`).join("") + (includeAd ? `
+          <div class="guess-ad">
+            <div class="guess-ad-inner">
+              <span class="guess-ad-icon">AD</span>
+              <span class="guess-ad-name">广告位</span>
+            </div>
+          </div>` : "");
+      };
+
+      buildVideoCards(document.getElementById("guessGrid"), "猜你喜欢视频", 8, true);
+      buildVideoCards(document.getElementById("recommendGrid"), "推荐视频", 20);
+
+      const playerShell = document.querySelector(".player-shell");
+      const playerBox = document.querySelector(".player-box");
+      const playerPreroll = document.getElementById("playerPreroll");
+      const prerollSkip = document.getElementById("prerollSkip");
+      const playerOverlay = document.querySelector(".player-overlay");
+      const playToggle = document.getElementById("playToggle");
+      const rewindButton = document.getElementById("rewindButton");
+      const forwardButton = document.getElementById("forwardButton");
+      const progressTrack = document.getElementById("progressTrack");
+      const progressFill = document.getElementById("progressFill");
+      const progressThumb = document.getElementById("progressThumb");
+      const previewPop = document.getElementById("previewPop");
+      const previewTime = document.getElementById("previewTime");
+      const previewFrame = document.getElementById("previewFrame");
+      const timeReadout = document.getElementById("timeReadout");
+      const volumeWrap = document.getElementById("volumeWrap");
+      const volumeButton = document.getElementById("volumeButton");
+      const volumeSlider = document.getElementById("volumeSlider");
+      const volumeValue = document.getElementById("volumeValue");
+      const fullscreenButton = document.getElementById("fullscreenButton");
+      const playerState = { duration: 768, currentTime: 0, playing: false, dragging: false, volume: 72 };
+      let playTimer = null;
+      let prerollRemaining = 2;
+      let prerollTimer = null;
+      let prerollClosed = false;
+
+      const formatTime = (seconds) => {
+        const safe = Math.max(0, Math.round(seconds));
+        const mins = Math.floor(safe / 60);
+        const secs = safe % 60;
+        return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      };
+
+      const syncPlayerUi = () => {
+        const progress = playerState.currentTime / playerState.duration;
+        const percent = Math.min(Math.max(progress, 0), 1) * 100;
+        progressFill.style.width = `${percent}%`;
+        progressThumb.style.left = `${percent}%`;
+        timeReadout.textContent = `${formatTime(playerState.currentTime)} / ${formatTime(playerState.duration)}`;
+        playerShell?.classList.toggle("is-playing", playerState.playing);
+        if (playToggle) playToggle.textContent = playerState.playing ? "❚❚" : "▶";
+        if (volumeButton) volumeButton.textContent = playerState.volume === 0 ? "🔇" : playerState.volume < 40 ? "🔉" : "🔊";
+        if (volumeValue) volumeValue.textContent = `${playerState.volume}%`;
+      };
+
+      const stopPlayback = () => {
+        playerState.playing = false;
+        window.clearInterval(playTimer);
+        playTimer = null;
+        syncPlayerUi();
+      };
+
+      const syncPreroll = () => {
+        if (!prerollSkip) return;
+        prerollSkip.textContent = `广告 ${Math.max(prerollRemaining, 0)}s`;
+      };
+
+      const closePreroll = () => {
+        if (prerollClosed) return;
+        prerollClosed = true;
+        window.clearInterval(prerollTimer);
+        prerollTimer = null;
+        playerPreroll?.classList.add("hidden");
+      };
+
+      const startPlayback = () => {
+        if (playerState.currentTime >= playerState.duration) playerState.currentTime = 0;
+        playerState.playing = true;
+        window.clearInterval(playTimer);
+        playTimer = window.setInterval(() => {
+          if (playerState.dragging) return;
+          playerState.currentTime = Math.min(playerState.duration, playerState.currentTime + 1);
+          if (playerState.currentTime >= playerState.duration) stopPlayback();
+          else syncPlayerUi();
+        }, 1000);
+        syncPlayerUi();
+      };
+
+      const togglePlayback = () => {
+        if (!prerollClosed) return;
+        if (playerState.playing) stopPlayback();
+        else startPlayback();
+      };
+
+      const positionToTime = (clientX) => {
+        const rect = progressTrack.getBoundingClientRect();
+        const ratio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+        return ratio * playerState.duration;
+      };
+
+      const updatePreview = (clientX, reveal = false) => {
+        const rect = progressTrack.getBoundingClientRect();
+        const clampedX = Math.min(Math.max(clientX, rect.left), rect.right);
+        const ratio = Math.min(Math.max((clampedX - rect.left) / rect.width, 0), 1);
+        previewPop.style.left = `${ratio * rect.width}px`;
+        previewTime.textContent = formatTime(ratio * playerState.duration);
+        previewFrame.style.setProperty("--preview-x", `${18 + ratio * 64}%`);
+        previewPop.classList.toggle("visible", reveal);
+      };
+
+      playToggle?.addEventListener("click", togglePlayback);
+      playerOverlay?.addEventListener("click", togglePlayback);
+      rewindButton?.addEventListener("click", () => {
+        playerState.currentTime = Math.max(0, playerState.currentTime - 15);
+        syncPlayerUi();
+      });
+      forwardButton?.addEventListener("click", () => {
+        playerState.currentTime = Math.min(playerState.duration, playerState.currentTime + 15);
+        if (playerState.currentTime >= playerState.duration && playerState.playing) stopPlayback();
+        else syncPlayerUi();
+      });
+
+      progressTrack?.addEventListener("pointermove", (event) => updatePreview(event.clientX, true));
+      progressTrack?.addEventListener("pointerleave", () => {
+        if (!playerState.dragging) previewPop.classList.remove("visible");
+      });
+      progressTrack?.addEventListener("click", (event) => {
+        playerState.currentTime = positionToTime(event.clientX);
+        syncPlayerUi();
+        updatePreview(event.clientX, true);
+      });
+
+      progressThumb?.addEventListener("pointerdown", (event) => {
+        playerState.dragging = true;
+        progressThumb.setPointerCapture(event.pointerId);
+        updatePreview(event.clientX, true);
+      });
+      progressThumb?.addEventListener("pointermove", (event) => {
+        if (!playerState.dragging) return;
+        playerState.currentTime = positionToTime(event.clientX);
+        syncPlayerUi();
+        updatePreview(event.clientX, true);
+      });
+      const releaseDrag = () => {
+        playerState.dragging = false;
+        previewPop.classList.remove("visible");
+      };
+      progressThumb?.addEventListener("pointerup", releaseDrag);
+      progressThumb?.addEventListener("pointercancel", releaseDrag);
+
+      volumeButton?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        volumeWrap.classList.toggle("open");
+      });
+      volumeSlider?.addEventListener("input", () => {
+        playerState.volume = Number(volumeSlider.value);
+        syncPlayerUi();
+      });
+      document.addEventListener("click", (event) => {
+        if (volumeWrap && !volumeWrap.contains(event.target)) volumeWrap.classList.remove("open");
+      });
+
+      fullscreenButton?.addEventListener("click", async () => {
+        if (!document.fullscreenElement) {
+          await playerShell?.requestFullscreen?.();
+        } else {
+          await document.exitFullscreen?.();
+        }
+      });
+      document.addEventListener("fullscreenchange", () => {
+        fullscreenButton.textContent = document.fullscreenElement ? "🡼" : "⛶";
+      });
+
+      syncPreroll();
+      prerollTimer = window.setInterval(() => {
+        prerollRemaining -= 1;
+        if (prerollRemaining <= 0) {
+          syncPreroll();
+          closePreroll();
+          return;
+        }
+        syncPreroll();
+      }, 1000);
+      syncPlayerUi();
+
+      const likeButton = document.querySelector(".like-btn");
+      const likeText = document.querySelector(".like-text");
+      let liked = false;
+      let likeCount = 2400;
+      const formatLike = (value) => (value >= 1000 ? `${(value / 1000).toFixed(1)}k` : `${value}`);
+      likeButton?.addEventListener("click", () => {
+        liked = !liked;
+        likeCount += liked ? 1 : -1;
+        likeButton.classList.toggle("is-liked", liked);
+        likeText.textContent = `点赞 ${formatLike(likeCount)}`;
+      });
+
+      document.querySelector(".share-btn")?.addEventListener("click", async () => {
+        const shareUrl = window.location.href;
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          document.querySelector(".share-btn span:last-child").textContent = "链接已复制";
+          setTimeout(() => {
+            document.querySelector(".share-btn span:last-child").textContent = "分享视频";
+          }, 1400);
+        } catch (error) {
+          window.alert("分享链接复制失败，请手动复制地址栏链接。");
+        }
+      });
+
+      const commentTextarea = document.querySelector(".comment-textarea");
+      const commentCount = document.querySelector(".comment-count");
+      const commentSubmit = document.querySelector(".comment-submit");
+      const commentList = document.getElementById("commentList");
+      const syncCommentCount = () => {
+        commentCount.textContent = `${commentTextarea.value.length} / 50`;
+        commentSubmit.disabled = !commentTextarea.value.trim();
+      };
+      commentTextarea?.addEventListener("input", syncCommentCount);
+      commentSubmit?.addEventListener("click", () => {
+        const text = commentTextarea.value.trim();
+        if (!text) return;
+        const item = document.createElement("article");
+        item.className = "comment-card";
+        item.innerHTML = `
+          <div class="comment-head"><strong class="comment-author">当前用户</strong><span class="comment-time">${new Date().toLocaleString("zh-CN", { hour12: false })}</span></div>
+          <p>${text}</p>`;
+        commentList.prepend(item);
+        commentTextarea.value = "";
+        syncCommentCount();
+      });
+      syncCommentCount();
+
+
+
+      (() => {
+        const requirementsRoot = document.querySelector('.requirements-modal-root');
+        const openRequirementsBtn = document.querySelector('[data-open-requirements]');
+        const closeRequirementsBtns = document.querySelectorAll('[data-close-requirements]');
+        const copyRequirementsBtn = document.querySelector('[data-copy-requirements]');
+        const saveRequirementsBtn = document.querySelector('[data-save-requirements]');
+        const requirementsContent = document.querySelector('.requirements-content');
+        const requirementsStatus = document.querySelector('[data-requirements-status]');
+        const copyTextNode = document.querySelector('[data-requirements-copy-text]');
+        if (!requirementsRoot || !openRequirementsBtn || !requirementsContent) return;
+        const requirementsStorageKey = 'Y12_REQUIREMENTS_HTML:video-detail';
+        const savedRequirementsHtml = localStorage.getItem(requirementsStorageKey);
+        if (savedRequirementsHtml) requirementsContent.innerHTML = savedRequirementsHtml;
+        const closeFloatingLayers = () => {
+          document.querySelector('.searchbox')?.classList.remove('open');
+          document.querySelector('.account-actions')?.classList.remove('open');
+          const accountTrigger = document.querySelector('.account-trigger');
+          accountTrigger?.setAttribute('aria-expanded', 'false');
+          const menuDropdown = document.querySelector('.menu-dropdown');
+          const menuToggle = document.querySelector('.menu-toggle');
+          menuDropdown?.classList.remove('open');
+          menuToggle?.setAttribute('aria-expanded', 'false');
+        };
+        const openRequirements = () => {
+          closeFloatingLayers();
+          requirementsRoot.classList.add('open');
+          requirementsRoot.setAttribute('aria-hidden', 'false');
+          document.body.classList.add('requirements-open');
+        };
+        const closeRequirements = () => {
+          requirementsRoot.classList.remove('open');
+          requirementsRoot.setAttribute('aria-hidden', 'true');
+          document.body.classList.remove('requirements-open');
+        };
+        const fallbackCopy = (text) => {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          const ok = document.execCommand('copy');
+          textarea.remove();
+          return ok;
+        };
+        const setCopyState = (state) => {
+          if (!copyRequirementsBtn) return;
+          copyRequirementsBtn.classList.remove('is-success', 'is-error');
+          if (state === 'success') {
+            copyRequirementsBtn.textContent = '已复制';
+            copyRequirementsBtn.classList.add('is-success');
+          } else if (state === 'error') {
+            copyRequirementsBtn.textContent = '复制失败';
+            copyRequirementsBtn.classList.add('is-error');
+          }
+          window.setTimeout(() => {
+            copyRequirementsBtn.textContent = '复制需求说明';
+            copyRequirementsBtn.classList.remove('is-success', 'is-error');
+          }, 1400);
+        };
+        const setSaveState = (state) => {
+          if (!saveRequirementsBtn) return;
+          saveRequirementsBtn.classList.remove('is-success', 'is-error');
+          if (state === 'success') {
+            saveRequirementsBtn.textContent = '已保存';
+            saveRequirementsBtn.classList.add('is-success');
+            if (requirementsStatus) { requirementsStatus.textContent = '文案已保存到当前浏览器。'; requirementsStatus.classList.add('is-success'); requirementsStatus.classList.remove('is-error'); }
+          } else if (state === 'error') {
+            saveRequirementsBtn.textContent = '保存失败';
+            saveRequirementsBtn.classList.add('is-error');
+            if (requirementsStatus) { requirementsStatus.textContent = '保存失败，请检查浏览器本地存储权限。'; requirementsStatus.classList.add('is-error'); requirementsStatus.classList.remove('is-success'); }
+          }
+          window.setTimeout(() => {
+            saveRequirementsBtn.textContent = '保存文案';
+            saveRequirementsBtn.classList.remove('is-success', 'is-error');
+          }, 1400);
+        };
+        const saveRequirements = () => {
+          try {
+            localStorage.setItem(requirementsStorageKey, requirementsContent.innerHTML);
+            if (copyTextNode) copyTextNode.textContent = requirementsContent.innerText.trim();
+            setSaveState('success');
+          } catch (error) {
+            setSaveState('error');
+          }
+        };
+        openRequirementsBtn.addEventListener('click', openRequirements);
+        closeRequirementsBtns.forEach((button) => button.addEventListener('click', closeRequirements));
+        saveRequirementsBtn?.addEventListener('click', saveRequirements);
+        copyRequirementsBtn?.addEventListener('click', async () => {
+          const text = (requirementsContent?.innerText || copyTextNode?.textContent || '').trim();
+          if (!text) { setCopyState('error'); return; }
+          try {
+            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+            else if (!fallbackCopy(text)) throw new Error('fallback copy failed');
+            setCopyState('success');
+          } catch (error) {
+            try { if (fallbackCopy(text)) setCopyState('success'); else setCopyState('error'); }
+            catch (_) { setCopyState('error'); }
+          }
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && requirementsRoot.classList.contains('open')) closeRequirements();
+        });
+      })();
+
+
+    </script>
+  </body>
+</html>
