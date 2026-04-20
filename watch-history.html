@@ -346,7 +346,6 @@
         padding:22px 24px; border-radius:var(--radius-lg); border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
       }
       .results-title { margin:0; font-size:1.6rem; }
-      .results-desc { margin:10px 0 0; color:var(--muted); }
       .toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-top:16px; }
       .toggle-group, .pager { display:flex; flex-wrap:wrap; gap:10px; }
       .toggle-btn, .pager-btn {
@@ -355,9 +354,9 @@
       }
       .toggle-btn.active, .pager-btn.active { color:#fff; border-color:transparent; background:linear-gradient(135deg, var(--brand), var(--brand-deep)); }
 
-      .results-grid-post { display:grid; gap:20px; justify-items:center; }
+      .results-grid-post { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:16px; }
       .card.dynamic-card {
-        position:relative; width:min(100%, 840px); aspect-ratio:2.45 / 1; min-height:auto; border:0; overflow:hidden;
+        position:relative; width:100%; min-height:128px; border:0; border-radius:18px; overflow:hidden;
         background:
           linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.78)),
           var(--dynamic-image, url("https://picsum.photos/seed/history-dynamic-1/1200/675")) center/cover no-repeat;
@@ -388,16 +387,17 @@
       }
       .dynamic-link { position:absolute; inset:0; z-index:2; }
       .dynamic-content {
-        position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:22px; text-align:center;
+        position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:14px; text-align:center;
       }
-      .dynamic-title { margin:0; max-width:92%; color:#fff; font-size:1.02rem; line-height:1.55; font-weight:700; text-shadow:0 2px 12px rgba(0,0,0,.34); }
-      .dynamic-meta { margin-top:14px; display:inline-flex; align-items:center; justify-content:center; color:rgba(255,255,255,.92); font-size:.9rem; font-weight:600; }
-      .dynamic-tags { margin-top:12px; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+      .dynamic-title { margin:0; max-width:96%; color:#fff; font-size:.78rem; line-height:1.45; font-weight:800; text-shadow:0 2px 12px rgba(0,0,0,.34); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+      .dynamic-meta { margin-top:8px; display:inline-flex; align-items:center; justify-content:center; color:rgba(255,255,255,.92); font-size:.76rem; font-weight:700; }
+      .dynamic-tags { margin-top:8px; display:flex; flex-wrap:wrap; justify-content:center; gap:6px; }
       .dynamic-tag {
-        padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); color:rgba(255,255,255,.94); font-size:.78rem; font-weight:600;
+        padding:4px 7px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); color:rgba(255,255,255,.94); font-size:.68rem; font-weight:700;
       }
 
-      .results-grid-video { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:16px; }
+      .results-grid-video,
+      .results-grid-novel { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:16px; }
       .card { overflow:hidden; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--surface); box-shadow:var(--shadow); transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
       .card:hover { transform:translateY(-4px); border-color:rgba(255,122,0,.2); box-shadow:0 18px 38px rgba(23,32,51,.12); }
       .card.dynamic-card:hover { box-shadow:0 22px 44px rgba(23,32,51,.18); }
@@ -418,6 +418,15 @@
       .meta-row { display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:12px; margin-top:12px; color:var(--muted); font-size:.86rem; }
       .meta-item { display:inline-flex; align-items:center; gap:6px; }
       .meta-separator { width:4px; height:4px; border-radius:999px; background:#b8c0cd; }
+      .novel-card { overflow:hidden; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--surface); box-shadow:var(--shadow); transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+      .novel-card:hover { transform:translateY(-4px); border-color:rgba(255,122,0,.2); box-shadow:0 18px 38px rgba(23,32,51,.12); }
+      .novel-card a { display:block; height:100%; }
+      .novel-cover { aspect-ratio:3/4; background:linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,.2)), var(--novel-image, url("https://picsum.photos/seed/history-novel/600/800")) center/cover no-repeat; }
+      .novel-body { padding:14px; }
+      .novel-title { margin:0; font-size:.98rem; line-height:1.45; font-weight:800; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; min-height:2.9em; }
+      .novel-meta { display:flex; flex-direction:column; gap:5px; margin-top:10px; color:var(--muted); font-size:.78rem; }
+      .novel-meta span { display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+      .novel-meta .icon { width:16px; color:var(--brand); font-weight:800; }
 
       
 
@@ -556,12 +565,12 @@
 
       @media (max-width: 1180px) {
         .topbar-inner { flex-wrap:wrap; }
-        .results-grid-video { grid-template-columns:repeat(3,minmax(0,1fr)); }
+        .results-grid-post, .results-grid-video, .results-grid-novel { grid-template-columns:repeat(3,minmax(0,1fr)); }
         .footer-grid, .history-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
       }
       @media (max-width: 780px) {
         .container { width:min(var(--wrap), calc(100% - 20px)); }
-        .results-grid-video, .footer-grid, .history-list { grid-template-columns:1fr; }
+        .results-grid-post, .results-grid-video, .results-grid-novel, .footer-grid, .history-list { grid-template-columns:1fr; }
         .account-actions, .btn { width:100%; }
         .account-menu { left:0; right:0; min-width:0; }
         .card.dynamic-card { width:100%; }
@@ -660,11 +669,11 @@
       <div class="results-shell">
         <section class="results-header">
           <h1 class="results-title">观看历史</h1>
-          <p class="results-desc">这里汇总用户最近浏览过的帖子和视频内容。</p>
           <div class="toolbar">
             <div class="toggle-group">
-              <button class="toggle-btn active" type="button" data-type="post">帖子列表</button>
-              <button class="toggle-btn" type="button" data-type="video">视频列表</button>
+              <button class="toggle-btn active" type="button" data-type="post">帖子</button>
+              <button class="toggle-btn" type="button" data-type="video">视频</button>
+              <button class="toggle-btn" type="button" data-type="novel">小说</button>
             </div>
           </div>
         </section>
@@ -672,6 +681,7 @@
         <section class="results-card">
           <div id="postResults" class="results-grid-post"></div>
           <div id="videoResults" class="results-grid-video" style="display:none;"></div>
+          <div id="novelResults" class="results-grid-novel" style="display:none;"></div>
         </section>
 
         <div class="pager" id="pager"></div>
@@ -725,8 +735,8 @@
             <ul>
               <li>顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。</li>
               <li>页面标题展示观看历史说明。</li>
-              <li>内容分类 Tab 包含帖子列表和视频列表。</li>
-              <li>帖子列表展示动态内容卡片，视频列表展示视频内容卡片。</li>
+              <li>内容分类 Tab 包含帖子列表、视频列表和小说列表。</li>
+              <li>帖子列表展示动态内容卡片，视频列表展示视频内容卡片，小说列表展示小说内容卡片。</li>
               <li>分页器用于切换历史数据。</li>
             </ul>
           </section>
@@ -748,8 +758,8 @@
 核心模块
 - 顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。
 - 页面标题展示观看历史说明。
-- 内容分类 Tab 包含帖子列表和视频列表。
-- 帖子列表展示动态内容卡片，视频列表展示视频内容卡片。
+- 内容分类 Tab 包含帖子列表、视频列表和小说列表。
+- 帖子列表展示动态内容卡片，视频列表展示视频内容卡片，小说列表展示小说内容卡片。
 - 分页器用于切换历史数据。
 
 交互规则
@@ -1084,7 +1094,7 @@
       });
 
       const state = { type: "post", page: 1 };
-      const postResults = Array.from({ length: 12 }, (_, index) => ({
+      const postResults = Array.from({ length: 25 }, (_, index) => ({
         title: `观看历史帖子标题示例 ${index + 1}`,
         date: `2026-04-${String((index % 18) + 1).padStart(2, "0")}`,
         variant: ["", "variant-b", "variant-c", "variant-d"][index % 4],
@@ -1101,13 +1111,26 @@
         tags: ["标签一", "标签二", "标签三"],
         href: "video-detail.html",
       }));
+      const novelResults = Array.from({ length: 30 }, (_, index) => ({
+        title: `观看历史小说标题示例 ${index + 1}`,
+        author: ["91视频", "惠惠", "小云云", "达摩祖师", "高端S之家"][index % 5],
+        date: `2026-04-${String((index % 20) + 1).padStart(2, "0")}`,
+        views: 2000 + index * 227,
+        cover: `https://picsum.photos/seed/history-novel-${index + 1}/600/800`,
+        href: "novel-detail.html",
+      }));
       const typeButtons = Array.from(document.querySelectorAll(".toggle-btn"));
       const pager = document.getElementById("pager");
       const postContainer = document.getElementById("postResults");
       const videoContainer = document.getElementById("videoResults");
+      const novelContainer = document.getElementById("novelResults");
       const formatCount = (num) => (num >= 10000 ? `${(num / 10000).toFixed(1)}万` : `${num}`);
-      const pageSize = () => (state.type === "post" ? 10 : 25);
-      const currentData = () => (state.type === "post" ? postResults : videoResults);
+      const pageSize = () => 25;
+      const currentData = () => {
+        if (state.type === "video") return videoResults;
+        if (state.type === "novel") return novelResults;
+        return postResults;
+      };
       const pageCount = () => Math.max(1, Math.ceil(currentData().length / pageSize()));
       const renderPager = () => {
         const totalPages = pageCount();
@@ -1151,6 +1174,22 @@
             </div>
           </article>`).join("");
       };
+      const renderNovels = (items) => {
+        novelContainer.innerHTML = items.map((item) => `
+          <article class="novel-card">
+            <a href="${item.href}">
+              <div class="novel-cover" style="--novel-image:url('${item.cover}')"></div>
+              <div class="novel-body">
+                <h3 class="novel-title">${item.title}</h3>
+                <div class="novel-meta">
+                  <span><strong>作者：</strong>${item.author}</span>
+                  <span><span class="icon">▣</span>上架：${item.date}</span>
+                  <span><span class="icon">◉</span>观看：${formatCount(item.views)}</span>
+                </div>
+              </div>
+            </a>
+          </article>`).join("");
+      };
       const render = () => {
         const totalPages = pageCount();
         state.page = Math.min(Math.max(1, state.page), totalPages);
@@ -1158,10 +1197,14 @@
         const items = currentData().slice(start, start + pageSize());
         typeButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.type === state.type));
         const showPosts = state.type === "post";
+        const showVideos = state.type === "video";
+        const showNovels = state.type === "novel";
         postContainer.style.display = showPosts ? "grid" : "none";
-        videoContainer.style.display = showPosts ? "none" : "grid";
+        videoContainer.style.display = showVideos ? "grid" : "none";
+        novelContainer.style.display = showNovels ? "grid" : "none";
         if (showPosts) renderPosts(items);
-        else renderVideos(items);
+        else if (showVideos) renderVideos(items);
+        else renderNovels(items);
         renderPager();
       };
       typeButtons.forEach((btn) => btn.addEventListener("click", () => {
