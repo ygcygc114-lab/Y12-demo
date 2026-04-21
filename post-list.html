@@ -430,13 +430,54 @@
       .dynamic-tag {
         padding:4px 7px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); color:rgba(255,255,255,.94); font-size:.68rem; font-weight:700;
       }
+      .card.dynamic-card {
+        aspect-ratio:3 / 4;
+        min-height:0;
+        border-radius:22px;
+      }
+      .card.dynamic-card::before {
+        background:
+          linear-gradient(180deg, rgba(0,0,0,.02) 8%, rgba(0,0,0,.1) 42%, rgba(0,0,0,.82) 100%),
+          radial-gradient(circle at 24% 30%, rgba(255,255,255,.16), transparent 20%),
+          radial-gradient(circle at 72% 18%, rgba(0,213,255,.2), transparent 18%),
+          radial-gradient(circle at 16% 18%, rgba(255,58,105,.28), transparent 22%);
+      }
+      .dynamic-content {
+        justify-content:flex-end;
+        align-items:flex-start;
+        padding:18px;
+        text-align:left;
+      }
+      .dynamic-title {
+        max-width:100%;
+        font-size:1.18rem;
+        line-height:1.08;
+        letter-spacing:-.02em;
+      }
+      .dynamic-meta {
+        justify-content:flex-start;
+        margin-top:10px;
+        font-size:.72rem;
+        line-height:1.45;
+        opacity:.94;
+      }
+      .dynamic-tags {
+        justify-content:flex-start;
+        margin-top:10px;
+      }
+      .dynamic-tag {
+        padding:5px 8px;
+        background:rgba(255,255,255,.18);
+        border-color:rgba(255,255,255,.2);
+        font-weight:800;
+      }
       .dynamic-ad-card {
         background:
-          linear-gradient(180deg, rgba(255,122,0,.18), rgba(0,0,0,.72)),
+          linear-gradient(180deg, rgba(255,122,0,.08), rgba(0,0,0,.32)),
           var(--dynamic-image, url("https://picsum.photos/seed/post-list-inline-ad/1200/675")) center/cover no-repeat;
       }
       .dynamic-ad-badge {
-        margin-bottom:8px;padding:5px 10px;border-radius:999px;background:rgba(255,122,0,.9);color:#fff;font-size:.72rem;font-weight:800;box-shadow:0 12px 24px rgba(0,0,0,.22);
+        width:100%;padding:10px 12px;border-radius:14px;background:rgba(23,32,51,.6);color:#fff;text-align:center;font-size:.98rem;font-weight:800;
       }
 
       
@@ -652,7 +693,6 @@
           <button class="menu-item menu-toggle" data-menu="menu-e" type="button" aria-expanded="false"><span>一级菜单E</span><span class="menu-caret">⌄</span></button>
           <div class="submenu"><a href="video-list.html?menu=menu-e">二级菜单 E-1</a><a href="video-list.html?menu=menu-e">二级菜单 E-2</a><a href="video-list.html?menu=menu-e">二级菜单 E-3</a></div>
         </div>
-        <a class="menu-item" data-menu="novel-f" href="novel-list.html?menu=novel-f">一级菜单F（小说）</a>
       <button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button></nav>
         <button class="menu-nav menu-nav-next" type="button" aria-label="向右切换菜单">›</button>
       </div>
@@ -720,14 +760,14 @@
 
 
 
-    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
+    <button class="requirements-float" type="button" data-open-requirements>通用组件说明</button>
     <div class="requirements-modal-root" aria-hidden="true">
       <div class="requirements-backdrop" data-close-requirements></div>
       <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
         <div class="requirements-head">
-          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
+          <h2 class="requirements-title" id="requirementsTitle">通用组件说明</h2>
           <div class="requirements-actions">
-            <button class="requirements-copy" type="button" data-copy-requirements>复制需求说明</button>
+            <button class="requirements-copy" type="button" data-copy-requirements>复制说明</button>
             <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
             <button class="requirements-close" type="button" data-close-requirements aria-label="关闭需求说明">×</button>
           </div>
@@ -820,7 +860,7 @@
       const menuPrev = document.querySelector(".menu-nav-prev");
       const menuNext = document.querySelector(".menu-nav-next");
       const menuSearchParams = new URLSearchParams(window.location.search);
-      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e", "novel-f"]);
+      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e"]);
       const currentMenuTitle = document.getElementById("currentMenuTitle");
       const menuTitleMap = {
         "post-a": "一级菜单A（帖子）",
@@ -835,8 +875,6 @@
         if (pathname.endsWith("/index.html") || pathname.endsWith("index.html")) return "home";
         if (pathname.endsWith("/video-list.html") || pathname.endsWith("video-list.html")) return "video-b";
         if (pathname.endsWith("/post-list.html") || pathname.endsWith("post-list.html")) return "post-a";
-        if (pathname.endsWith("/novel-list.html") || pathname.endsWith("novel-list.html")) return "novel-f";
-        if (pathname.endsWith("/novel-detail.html") || pathname.endsWith("novel-detail.html")) return "novel-f";
         if (pathname.endsWith("/search-results.html") || pathname.endsWith("search-results.html")) {
           return menuSearchParams.get("type") === "video" ? "video-b" : "post-a";
         }
@@ -900,6 +938,7 @@
       const searchSubmit = document.querySelector(".search-submit");
       const historyList = document.querySelector(".history-list");
       const clearHistoryBtn = document.querySelector(".history-clear");
+      const searchHead = document.querySelector(".search-head");
       const hotTags = Array.from(document.querySelectorAll(".hot-tag"));
       let searchHistory = ["最新上架", "热门专题", "剧情合集", "会员推荐"];
 
@@ -915,9 +954,11 @@
         if (!searchHistory.length) {
           historyList.innerHTML = "";
           historyList.classList.add("is-empty");
+          if (searchHead) searchHead.hidden = true;
           return;
         }
         historyList.classList.remove("is-empty");
+        if (searchHead) searchHead.hidden = false;
         historyList.innerHTML = searchHistory.map((item, index) => `
           <div class="history-item">
             <div class="history-label"><span>⏱</span><span>${item}</span></div>
@@ -1182,7 +1223,7 @@
             <a class="dynamic-link" href="${item.href}" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">${item.title}</h3>
-              <div class="dynamic-meta"><span>上架时间：${item.date}</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：${item.date}</span></div>
               <div class="dynamic-tags">${item.tags.map((tag) => `<span class="dynamic-tag">${tag}</span>`).join("")}</div>
             </div>
           </article>`);
@@ -1191,8 +1232,6 @@
             <article class="card dynamic-card dynamic-ad-card" style="--dynamic-image:url('https://picsum.photos/seed/post-list-inline-ad/1200/675')">
               <div class="dynamic-content">
                 <span class="dynamic-ad-badge">广告A</span>
-                <h3 class="dynamic-title">动态列表广告位</h3>
-                <div class="dynamic-meta"><span>广告封面图展示</span></div>
               </div>
             </article>`);
         }
@@ -1319,5 +1358,6 @@
 
 
     </script>
+    <script src="common-components-requirements.js"></script>
   </body>
 </html>

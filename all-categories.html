@@ -405,6 +405,73 @@
       }
       .results-title { margin:0; font-size:1.6rem; }
       .results-keyword { color:var(--brand); }
+      .tag-filters {
+        display:grid;
+        gap:14px;
+        margin-top:18px;
+      }
+      .tag-filter-row {
+        display:grid;
+        grid-template-columns:auto minmax(0, 1fr);
+        gap:12px;
+        align-items:center;
+      }
+      .tag-filter-label {
+        color:var(--muted);
+        font-size:.9rem;
+        font-weight:800;
+        white-space:nowrap;
+      }
+      .tag-filter-scroller {
+        display:grid;
+        grid-template-columns:34px minmax(0, 1fr) 34px;
+        gap:8px;
+        align-items:center;
+      }
+      .tag-scroll-btn {
+        width:34px;
+        height:34px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--muted);
+        font-weight:900;
+        cursor:pointer;
+      }
+      .tag-scroll-btn:disabled { opacity:.38; cursor:default; }
+      .tag-filter-track {
+        display:flex;
+        gap:10px;
+        overflow-x:auto;
+        scrollbar-width:none;
+        -ms-overflow-style:none;
+        scroll-behavior:smooth;
+        padding-bottom:2px;
+      }
+      .tag-filter-track::-webkit-scrollbar { display:none; }
+      .tag-category-btn,
+      .tag-chip-btn {
+        flex:0 0 auto;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:38px;
+        padding:0 14px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--muted);
+        font-size:.88rem;
+        font-weight:800;
+        cursor:pointer;
+        white-space:nowrap;
+      }
+      .tag-category-btn.active,
+      .tag-chip-btn.active {
+        color:#fff;
+        border-color:transparent;
+        background:linear-gradient(135deg, var(--brand), var(--brand-deep));
+      }
       .toolbar {
         display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-top:16px;
       }
@@ -476,13 +543,54 @@
         font-weight:700;
         backdrop-filter:blur(4px);
       }
+      .card.dynamic-card {
+        aspect-ratio:3 / 4;
+        min-height:0;
+        border-radius:22px;
+      }
+      .card.dynamic-card::before {
+        background:
+          linear-gradient(180deg, rgba(0,0,0,.02) 8%, rgba(0,0,0,.1) 42%, rgba(0,0,0,.82) 100%),
+          radial-gradient(circle at 24% 30%, rgba(255,255,255,.16), transparent 20%),
+          radial-gradient(circle at 72% 18%, rgba(0,213,255,.2), transparent 18%),
+          radial-gradient(circle at 16% 18%, rgba(255,58,105,.28), transparent 22%);
+      }
+      .dynamic-content {
+        justify-content:flex-end;
+        align-items:flex-start;
+        padding:18px;
+        text-align:left;
+      }
+      .dynamic-title {
+        max-width:100%;
+        font-size:1.18rem;
+        line-height:1.08;
+        letter-spacing:-.02em;
+      }
+      .dynamic-meta {
+        justify-content:flex-start;
+        margin-top:10px;
+        font-size:.72rem;
+        line-height:1.45;
+        opacity:.94;
+      }
+      .dynamic-tags {
+        justify-content:flex-start;
+        margin-top:10px;
+      }
+      .dynamic-tag {
+        padding:5px 8px;
+        background:rgba(255,255,255,.18);
+        border-color:rgba(255,255,255,.2);
+        font-weight:800;
+      }
       .dynamic-ad-card {
         background:
-          linear-gradient(180deg, rgba(255,122,0,.18), rgba(0,0,0,.72)),
+          linear-gradient(180deg, rgba(255,122,0,.08), rgba(0,0,0,.32)),
           var(--dynamic-image, url("https://picsum.photos/seed/category-post-ad/1200/675")) center/cover no-repeat;
       }
       .dynamic-ad-badge {
-        margin-bottom:8px;padding:5px 10px;border-radius:999px;background:rgba(255,122,0,.9);color:#fff;font-size:.72rem;font-weight:800;box-shadow:0 12px 24px rgba(0,0,0,.22);
+        width:100%;padding:10px 12px;border-radius:14px;background:rgba(23,32,51,.6);color:#fff;text-align:center;font-size:.98rem;font-weight:800;
       }
 
       .results-grid-video { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:16px; }
@@ -645,6 +753,8 @@
       .requirements-card p { margin: 0 0 8px; }
       .requirements-card ul { margin: 0; padding-left: 20px; }
       @media (max-width: 780px) {
+        .tag-filter-row { grid-template-columns:1fr; gap:8px; }
+        .tag-filter-scroller { grid-template-columns:30px minmax(0, 1fr) 30px; }
         .requirements-float { right: 14px; bottom: 14px; min-height: 42px; padding: 0 14px; font-size: .88rem; }
         .requirements-modal-root { padding: 14px; }
         .requirements-modal { padding: 20px; border-radius: 22px; }
@@ -761,7 +871,6 @@
           <button class="menu-item menu-toggle" data-menu="menu-e" type="button" aria-expanded="false"><span>一级菜单E</span><span class="menu-caret">⌄</span></button>
           <div class="submenu"><a href="video-list.html?menu=menu-e">二级菜单 E-1</a><a href="video-list.html?menu=menu-e">二级菜单 E-2</a><a href="video-list.html?menu=menu-e">二级菜单 E-3</a></div>
         </div>
-        <a class="menu-item" data-menu="novel-f" href="novel-list.html?menu=novel-f">一级菜单F（小说）</a>
       <button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button></nav>
         <button class="menu-nav menu-nav-next" type="button" aria-label="向右切换菜单">›</button>
       </div>
@@ -788,17 +897,33 @@
       <div class="results-shell">
         <section class="results-header">
           <h1 class="results-title">全部分类</h1>
+          <div class="tag-filters">
+            <div class="tag-filter-row">
+              <span class="tag-filter-label">标签类别</span>
+              <div class="tag-filter-scroller">
+                <button class="tag-scroll-btn" type="button" data-scroll-target="categoryTrack" data-scroll-dir="-1" aria-label="向左切换标签类别">‹</button>
+                <div class="tag-filter-track" id="categoryTrack"></div>
+                <button class="tag-scroll-btn" type="button" data-scroll-target="categoryTrack" data-scroll-dir="1" aria-label="向右切换标签类别">›</button>
+              </div>
+            </div>
+            <div class="tag-filter-row">
+              <span class="tag-filter-label">对应标签</span>
+              <div class="tag-filter-scroller">
+                <button class="tag-scroll-btn" type="button" data-scroll-target="tagTrack" data-scroll-dir="-1" aria-label="向左切换标签">‹</button>
+                <div class="tag-filter-track" id="tagTrack"></div>
+                <button class="tag-scroll-btn" type="button" data-scroll-target="tagTrack" data-scroll-dir="1" aria-label="向右切换标签">›</button>
+              </div>
+            </div>
+          </div>
           <div class="toolbar">
             <div class="filter-block">
               <span class="filter-label">分类筛选</span>
               <div class="toggle-group">
-                <button class="toggle-btn active" type="button" data-type="video">视频</button>
-                <button class="toggle-btn" type="button" data-type="post">帖子</button>
-                <button class="toggle-btn" type="button" data-type="novel">小说</button>
+                <button class="toggle-btn active" type="button" data-type="post">帖子</button>
+                <button class="toggle-btn" type="button" data-type="video">视频</button>
               </div>
             </div>
             <div class="filter-block">
-              <span class="filter-label">排序筛选</span>
               <div class="sort-group">
                 <button class="sort-btn active" type="button" data-sort="latest">最新上架</button>
                 <button class="sort-btn" type="button" data-sort="likes">最多点赞</button>
@@ -842,14 +967,14 @@
 
 
 
-    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
+    <button class="requirements-float" type="button" data-open-requirements>通用组件说明</button>
     <div class="requirements-modal-root" aria-hidden="true">
       <div class="requirements-backdrop" data-close-requirements></div>
       <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
         <div class="requirements-head">
-          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
+          <h2 class="requirements-title" id="requirementsTitle">通用组件说明</h2>
           <div class="requirements-actions">
-            <button class="requirements-copy" type="button" data-copy-requirements>复制需求说明</button>
+            <button class="requirements-copy" type="button" data-copy-requirements>复制说明</button>
             <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
             <button class="requirements-close" type="button" data-close-requirements aria-label="关闭需求说明">×</button>
           </div>
@@ -858,7 +983,7 @@
           <section class="requirements-card">
             <h3>页面概述</h3>
             <ul>
-              <li>全部分类页用于按内容类型浏览站内视频、帖子和小说内容。</li>
+              <li>全部分类页用于按内容类型浏览站内视频和帖子内容。</li>
             </ul>
           </section>
           <section class="requirements-card">
@@ -866,8 +991,8 @@
             <ul>
               <li>顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。</li>
               <li>页面标题展示全部分类，筛选区展示分类筛选和排序筛选。</li>
-              <li>分类筛选包含视频、帖子、小说，默认选中视频。</li>
-              <li>点击视频、帖子、小说分类时，分别展示对应的视频卡片、动态卡片和小说卡片列表。</li>
+              <li>分类筛选包含帖子、视频，默认选中帖子。</li>
+              <li>点击视频、帖子分类时，分别展示对应的视频卡片和动态卡片列表。</li>
               <li>排序栏包含最新上架、最多点赞、最多观看、随机展示。</li>
               <li>分页器用于切换当前分类列表页码。</li>
             </ul>
@@ -886,13 +1011,13 @@
       <script type="text/plain" data-requirements-copy-text>全部分类页需求说明
 
 页面概述
-- 全部分类页用于按内容类型浏览站内视频、帖子和小说内容。
+- 全部分类页用于按内容类型浏览站内视频和帖子内容。
 
 核心模块
 - 顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。
 - 页面标题展示全部分类，筛选区展示分类筛选和排序筛选。
-- 分类筛选包含视频、帖子、小说，默认选中视频。
-- 点击视频、帖子、小说分类时，分别展示对应的视频卡片、动态卡片和小说卡片列表。
+- 分类筛选包含帖子、视频，默认选中帖子。
+- 点击视频、帖子分类时，分别展示对应的视频卡片和动态卡片列表。
 - 排序栏包含最新上架、最多点赞、最多观看、随机展示。
 - 分页器用于切换当前分类列表页码。
 
@@ -961,7 +1086,7 @@
       const menuPrev = document.querySelector(".menu-nav-prev");
       const menuNext = document.querySelector(".menu-nav-next");
       const menuSearchParams = new URLSearchParams(window.location.search);
-      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e", "novel-f"]);
+      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e"]);
 
       const resolveActiveMenu = () => {
         const { pathname } = window.location;
@@ -972,12 +1097,9 @@
         if (pathname.endsWith("/index.html") || pathname.endsWith("index.html")) return "home";
         if (pathname.endsWith("/video-list.html") || pathname.endsWith("video-list.html")) return "video-b";
         if (pathname.endsWith("/post-list.html") || pathname.endsWith("post-list.html")) return "post-a";
-        if (pathname.endsWith("/novel-list.html") || pathname.endsWith("novel-list.html")) return "novel-f";
-        if (pathname.endsWith("/novel-detail.html") || pathname.endsWith("novel-detail.html")) return "novel-f";
         if (pathname.endsWith("/search-results.html") || pathname.endsWith("search-results.html")) {
           const type = menuSearchParams.get("type");
           if (type === "video") return "video-b";
-          if (type === "novel") return "novel-f";
           return "post-a";
         }
         if (
@@ -1039,6 +1161,7 @@
       const searchSubmit = document.querySelector(".search-submit");
       const historyList = document.querySelector(".history-list");
       const clearHistoryBtn = document.querySelector(".history-clear");
+      const searchHead = document.querySelector(".search-head");
       const hotTags = Array.from(document.querySelectorAll(".hot-tag"));
       let searchHistory = ["最新上架", "热门专题", "剧情合集", "会员推荐"];
 
@@ -1054,9 +1177,11 @@
         if (!searchHistory.length) {
           historyList.innerHTML = "";
           historyList.classList.add("is-empty");
+          if (searchHead) searchHead.hidden = true;
           return;
         }
         historyList.classList.remove("is-empty");
+        if (searchHead) searchHead.hidden = false;
         historyList.innerHTML = searchHistory.map((item, index) => `
           <div class="history-item">
             <div class="history-label"><span>⏱</span><span>${item}</span></div>
@@ -1293,31 +1418,56 @@
       const params = new URLSearchParams(window.location.search);
       const state = {
         q: params.get("q") || "全部",
-        type: params.get("type") || "video",
+        type: ["post", "video"].includes(params.get("type")) ? params.get("type") : "post",
         sort: params.get("sort") || "latest",
         page: Number(params.get("page") || "1"),
+        tagCategory: params.get("tagCategory") || "推荐专题",
+        tag: params.get("tag") || "全部",
       };
       searchInput.value = "";
 
-      const postResults = Array.from({ length: 48 }, (_, index) => ({
-        title: `${state.q || "搜索"} 相关帖子标题示例 ${index + 1}，用于展示动态搜索结果卡片`,
-        date: `2026-04-${String((index % 18) + 1).padStart(2, "0")}`,
-        views: 60000 + index * 3500,
-        likes: 500 + index * 87,
-        variant: ["", "variant-b", "variant-c", "variant-d"][index % 4],
-        tags: ["动态标签A", "动态标签B", "动态标签C"],
-        href: "dynamic-detail.html",
-      }));
-      const videoResults = Array.from({ length: 60 }, (_, index) => ({
-        title: `${state.q || "搜索"} 相关视频标题示例 ${index + 1}`,
-        date: `2026-04-${String((index % 20) + 1).padStart(2, "0")}`,
-        views: 80000 + index * 4200,
-        likes: 700 + index * 66,
-        viewsStat: `${(80000 + index * 4200) >= 10000 ? ((80000 + index * 4200) / 10000).toFixed(1) + "万" : (80000 + index * 4200)}`,
-        likesStat: `${(700 + index * 66) >= 1000 ? ((700 + index * 66) / 1000).toFixed(1) + "k" : (700 + index * 66)}`,
-        tags: ["标签一", "标签二", "标签三"],
-        href: "video-detail.html",
-      }));
+      const tagCategoryMap = {
+        "推荐专题": ["全部", "主编推荐", "平台热播", "人气更新", "榜单精选", "本周热议", "站内合集", "精品专题"],
+        "更新节奏": ["全部", "今日更新", "昨日热门", "本周更新", "持续加更", "抢先上线", "深夜专区", "午间速看"],
+        "内容题材": ["全部", "剧情向", "户外向", "访谈向", "合集向", "剪辑向", "纪实向", "栏目向", "轻剧情"],
+        "观看偏好": ["全部", "高播放", "高点赞", "新上架", "随机推荐", "收藏热门", "沉浸体验", "短时高能"],
+        "运营标签": ["全部", "平台推荐", "会员精选", "编辑精选", "专题推荐", "活动入口", "新片速递", "热搜关联", "高分推荐"]
+      };
+      if (!tagCategoryMap[state.tagCategory]) state.tagCategory = "推荐专题";
+      if (!tagCategoryMap[state.tagCategory].includes(state.tag)) state.tag = "全部";
+
+      const categoryKeys = Object.keys(tagCategoryMap);
+      const postResults = Array.from({ length: 48 }, (_, index) => {
+        const category = categoryKeys[index % categoryKeys.length];
+        const categoryTags = tagCategoryMap[category].slice(1);
+        return {
+          title: `${state.q || "搜索"} 相关帖子标题示例 ${index + 1}，用于展示动态搜索结果卡片`,
+          date: `2026-04-${String((index % 18) + 1).padStart(2, "0")}`,
+          views: 60000 + index * 3500,
+          likes: 500 + index * 87,
+          variant: ["", "variant-b", "variant-c", "variant-d"][index % 4],
+          tagCategory: category,
+          tags: [categoryTags[index % categoryTags.length], categoryTags[(index + 2) % categoryTags.length], categoryTags[(index + 4) % categoryTags.length]],
+          href: "dynamic-detail.html",
+        };
+      });
+      const videoResults = Array.from({ length: 60 }, (_, index) => {
+        const category = categoryKeys[index % categoryKeys.length];
+        const categoryTags = tagCategoryMap[category].slice(1);
+        const views = 80000 + index * 4200;
+        const likes = 700 + index * 66;
+        return {
+          title: `${state.q || "搜索"} 相关视频标题示例 ${index + 1}`,
+          date: `2026-04-${String((index % 20) + 1).padStart(2, "0")}`,
+          views,
+          likes,
+          viewsStat: `${views >= 10000 ? (views / 10000).toFixed(1) + "万" : views}`,
+          likesStat: `${likes >= 1000 ? (likes / 1000).toFixed(1) + "k" : likes}`,
+          tagCategory: category,
+          tags: [categoryTags[index % categoryTags.length], categoryTags[(index + 1) % categoryTags.length], categoryTags[(index + 3) % categoryTags.length]],
+          href: "video-detail.html",
+        };
+      });
       const novelResults = Array.from({ length: 48 }, (_, index) => ({
         title: `${state.q || "搜索"} 相关小说标题示例 ${index + 1}`,
         author: ["91视频", "惠惠", "小云云", "高端s之家", "达摩祖师", "薇薇安"][index % 6],
@@ -1326,7 +1476,7 @@
         likes: 180 + index * 19,
         upvotes: 96 + index * 12,
         cover: `https://picsum.photos/seed/category-novel-${index + 1}/600/800`,
-        href: "novel-detail.html",
+        href: "#",
       }));
 
       const typeButtons = Array.from(document.querySelectorAll(".toggle-btn"));
@@ -1335,10 +1485,17 @@
       const postContainer = document.getElementById("postResults");
       const videoContainer = document.getElementById("videoResults");
       const novelContainer = document.getElementById("novelResults");
+      const categoryTrack = document.getElementById("categoryTrack");
+      const tagTrack = document.getElementById("tagTrack");
 
       const formatCount = (num) => (num >= 10000 ? `${(num / 10000).toFixed(1)}万` : `${num}`);
+      const filterData = (items) => items.filter((item) => {
+        if (item.tagCategory !== state.tagCategory) return false;
+        if (state.tag === "全部") return true;
+        return Array.isArray(item.tags) && item.tags.includes(state.tag);
+      });
       const sortData = (items) => {
-        const copied = [...items];
+        const copied = [...filterData(items)];
         if (state.sort === "likes") copied.sort((a, b) => b.likes - a.likes);
         else if (state.sort === "views") copied.sort((a, b) => b.views - a.views);
         else if (state.sort === "random") copied.sort((a, b) => ((a.likes * 7 + a.views) % 13) - ((b.likes * 7 + b.views) % 13));
@@ -1346,12 +1503,45 @@
         return copied;
       };
       const pageSize = () => (state.type === "video" ? 25 : 24);
-      const currentData = () => sortData(state.type === "post" ? postResults : state.type === "video" ? videoResults : novelResults);
+      const currentData = () => sortData(state.type === "post" ? postResults : videoResults);
       const pageCount = () => Math.max(1, Math.ceil(currentData().length / pageSize()));
 
       const syncUrl = () => {
-        const next = new URLSearchParams({ type: state.type, sort: state.sort, page: String(state.page) });
+        const next = new URLSearchParams({
+          type: state.type,
+          sort: state.sort,
+          page: String(state.page),
+          tagCategory: state.tagCategory,
+          tag: state.tag
+        });
         window.history.replaceState({}, "", `${window.location.pathname}?${next.toString()}`);
+      };
+
+      const updateScrollButtons = (trackId) => {
+        const track = document.getElementById(trackId);
+        if (!track) return;
+        const prev = document.querySelector(`[data-scroll-target="${trackId}"][data-scroll-dir="-1"]`);
+        const next = document.querySelector(`[data-scroll-target="${trackId}"][data-scroll-dir="1"]`);
+        if (prev) prev.disabled = track.scrollLeft <= 4;
+        if (next) next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      };
+
+      const renderTagCategories = () => {
+        if (!categoryTrack) return;
+        categoryTrack.innerHTML = categoryKeys.map((category) => `
+          <button class="tag-category-btn${category === state.tagCategory ? " active" : ""}" type="button" data-tag-category="${category}">${category}</button>
+        `).join("");
+        updateScrollButtons("categoryTrack");
+      };
+
+      const renderTags = () => {
+        if (!tagTrack) return;
+        const tags = tagCategoryMap[state.tagCategory] || ["全部"];
+        if (!tags.includes(state.tag)) state.tag = "全部";
+        tagTrack.innerHTML = tags.map((tag) => `
+          <button class="tag-chip-btn${tag === state.tag ? " active" : ""}" type="button" data-tag-value="${tag}">${tag}</button>
+        `).join("");
+        updateScrollButtons("tagTrack");
       };
 
       const renderPager = () => {
@@ -1383,7 +1573,7 @@
             <a class="dynamic-link" href="${item.href}" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">${item.title}</h3>
-              <div class="dynamic-meta"><span>上架时间：${item.date}</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：${item.date}</span></div>
               <div class="dynamic-tags">${item.tags.map((tag) => `<span class="dynamic-tag">${tag}</span>`).join("")}</div>
             </div>
           </article>`);
@@ -1392,8 +1582,6 @@
             <article class="card dynamic-card dynamic-ad-card" style="--dynamic-image:url('https://picsum.photos/seed/category-post-ad/1200/675')">
               <div class="dynamic-content">
                 <span class="dynamic-ad-badge">广告A</span>
-                <h3 class="dynamic-title">动态列表广告位</h3>
-                <div class="dynamic-meta"><span>广告封面图展示</span></div>
               </div>
             </article>`);
         }
@@ -1439,6 +1627,8 @@
       };
 
       const render = () => {
+        renderTagCategories();
+        renderTags();
         const data = currentData();
         const totalPages = pageCount();
         state.page = Math.min(Math.max(1, state.page), totalPages);
@@ -1464,6 +1654,40 @@
         else renderNovels(items);
         renderPager();
       };
+
+      categoryTrack?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-tag-category]");
+        if (!button) return;
+        state.tagCategory = button.dataset.tagCategory;
+        state.tag = "全部";
+        state.page = 1;
+        syncUrl();
+        render();
+      });
+
+      tagTrack?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-tag-value]");
+        if (!button) return;
+        state.tag = button.dataset.tagValue;
+        state.page = 1;
+        syncUrl();
+        render();
+      });
+
+      document.querySelectorAll("[data-scroll-target]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const track = document.getElementById(button.dataset.scrollTarget);
+          if (!track) return;
+          const delta = Number(button.dataset.scrollDir || "1") * Math.max(220, track.clientWidth * 0.55);
+          track.scrollBy({ left: delta, behavior: "smooth" });
+          window.setTimeout(() => updateScrollButtons(button.dataset.scrollTarget), 220);
+        });
+      });
+
+      ["categoryTrack", "tagTrack"].forEach((trackId) => {
+        const track = document.getElementById(trackId);
+        track?.addEventListener("scroll", () => updateScrollButtons(trackId));
+      });
 
       typeButtons.forEach((btn) => btn.addEventListener("click", () => {
         state.type = btn.dataset.type;
@@ -1593,5 +1817,6 @@
 
 
     </script>
+    <script src="common-components-requirements.js"></script>
   </body>
 </html>

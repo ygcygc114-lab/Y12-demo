@@ -413,11 +413,32 @@
       .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
       .tag { padding: 7px 10px; border-radius: 999px; background: var(--surface-muted); color: var(--muted); font-size: 0.78rem; font-weight: 700; }
       .video-ad-card .video-cover {
-        display:flex;align-items:flex-end;justify-content:center;padding:16px;
+        position:absolute;
+        inset:0;
+        aspect-ratio:auto;
         background:linear-gradient(135deg, rgba(255,177,112,.82), rgba(255,106,0,.78)), var(--ad-image, url("https://picsum.photos/seed/video-list-ad/800/450")) center/cover no-repeat;
       }
-      .video-ad-name {
-        width:100%;padding:10px 12px;border-radius:14px;background:rgba(23,32,51,.76);color:#fff;text-align:center;font-weight:800;
+      .video-ad-card {
+        position:relative;
+        min-height:100%;
+      }
+      .video-ad-card .card-body {
+        position:relative;
+        z-index:2;
+        min-height:100%;
+        display:flex;
+        align-items:flex-end;
+        padding:16px;
+        background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.64));
+      }
+      .video-ad-card .video-title {
+        width:100%;
+        padding:10px 12px;
+        border-radius:14px;
+        background:rgba(23,32,51,.6);
+        color:#fff;
+        text-align:center;
+        font-weight:800;
       }
       .meta-row { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 12px; margin-top: 12px; color: var(--muted); font-size: 0.86rem; }
       .meta-item { display: inline-flex; align-items: center; gap: 6px; }
@@ -634,7 +655,6 @@
           <button class="menu-item menu-toggle" data-menu="menu-e" type="button" aria-expanded="false"><span>一级菜单E</span><span class="menu-caret">⌄</span></button>
           <div class="submenu"><a href="video-list.html?menu=menu-e">二级菜单 E-1</a><a href="video-list.html?menu=menu-e">二级菜单 E-2</a><a href="video-list.html?menu=menu-e">二级菜单 E-3</a></div>
         </div>
-        <a class="menu-item" data-menu="novel-f" href="novel-list.html?menu=novel-f">一级菜单F（小说）</a>
       <button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button></nav>
         <button class="menu-nav menu-nav-next" type="button" aria-label="向右切换菜单">›</button>
       </div>
@@ -702,14 +722,14 @@
 
 
 
-    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
+    <button class="requirements-float" type="button" data-open-requirements>通用组件说明</button>
     <div class="requirements-modal-root" aria-hidden="true">
       <div class="requirements-backdrop" data-close-requirements></div>
       <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
         <div class="requirements-head">
-          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
+          <h2 class="requirements-title" id="requirementsTitle">通用组件说明</h2>
           <div class="requirements-actions">
-            <button class="requirements-copy" type="button" data-copy-requirements>复制需求说明</button>
+            <button class="requirements-copy" type="button" data-copy-requirements>复制说明</button>
             <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
             <button class="requirements-close" type="button" data-close-requirements aria-label="关闭需求说明">×</button>
           </div>
@@ -802,14 +822,13 @@
       const menuPrev = document.querySelector(".menu-nav-prev");
       const menuNext = document.querySelector(".menu-nav-next");
       const menuSearchParams = new URLSearchParams(window.location.search);
-      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e", "novel-f"]);
+      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e"]);
       const currentMenuTitle = document.getElementById("currentMenuTitle");
       const menuTitleMap = {
         "video-b": "一级菜单B（视频）",
         "video-c": "一级菜单C（视频）",
         "video-d": "一级菜单D（视频）",
-        "menu-e": "一级菜单E",
-        "novel-f": "一级菜单F（小说）"
+        "menu-e": "一级菜单E"
       };
 
       const resolveActiveMenu = () => {
@@ -820,8 +839,6 @@
 
         if (pathname.endsWith("/index.html") || pathname.endsWith("index.html")) return "home";
         if (pathname.endsWith("/video-list.html") || pathname.endsWith("video-list.html")) return "video-b";
-        if (pathname.endsWith("/novel-list.html") || pathname.endsWith("novel-list.html")) return "novel-f";
-        if (pathname.endsWith("/novel-detail.html") || pathname.endsWith("novel-detail.html")) return "novel-f";
         if (pathname.endsWith("/post-list.html") || pathname.endsWith("post-list.html")) return "post-a";
         if (pathname.endsWith("/search-results.html") || pathname.endsWith("search-results.html")) {
           return menuSearchParams.get("type") === "video" ? "video-b" : "post-a";
@@ -886,6 +903,7 @@
       const searchSubmit = document.querySelector(".search-submit");
       const historyList = document.querySelector(".history-list");
       const clearHistoryBtn = document.querySelector(".history-clear");
+      const searchHead = document.querySelector(".search-head");
       const hotTags = Array.from(document.querySelectorAll(".hot-tag"));
       let searchHistory = ["最新上架", "热门专题", "剧情合集", "会员推荐"];
 
@@ -901,9 +919,11 @@
         if (!searchHistory.length) {
           historyList.innerHTML = "";
           historyList.classList.add("is-empty");
+          if (searchHead) searchHead.hidden = true;
           return;
         }
         historyList.classList.remove("is-empty");
+        if (searchHead) searchHead.hidden = false;
         historyList.innerHTML = searchHistory.map((item, index) => `
           <div class="history-item">
             <div class="history-label"><span>⏱</span><span>${item}</span></div>
@@ -1178,12 +1198,9 @@
         if (cards.length) {
           cards.splice(Math.min(7, cards.length), 0, `
             <article class="card video-ad-card">
-              <div class="video-cover" style="--ad-image:url('https://picsum.photos/seed/video-list-inline-ad/800/450')">
-                <span class="video-ad-name">广告A</span>
-              </div>
+              <div class="video-cover" style="--ad-image:url('https://picsum.photos/seed/video-list-inline-ad/800/450')"></div>
               <div class="card-body">
-                <h3 class="card-title video-title">视频列表广告位</h3>
-                <div class="tags"><span class="tag">推广</span><span class="tag">广告</span><span class="tag">合作</span></div>
+                <h3 class="card-title video-title">广告A</h3>
               </div>
             </article>`);
         }
@@ -1310,5 +1327,6 @@
 
 
     </script>
+    <script src="common-components-requirements.js"></script>
   </body>
 </html>

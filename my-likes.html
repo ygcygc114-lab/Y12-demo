@@ -335,6 +335,47 @@
       .dynamic-meta { margin-top:8px; display:inline-flex; align-items:center; justify-content:center; color:rgba(255,255,255,.92); font-size:.76rem; font-weight:700; }
       .dynamic-tags { margin-top:8px; display:flex; flex-wrap:wrap; justify-content:center; gap:6px; }
       .dynamic-tag { padding:4px 7px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); color:rgba(255,255,255,.94); font-size:.68rem; font-weight:700; }
+      .card.dynamic-card {
+        aspect-ratio:3 / 4;
+        min-height:0;
+        border-radius:22px;
+      }
+      .card.dynamic-card::before {
+        background:
+          linear-gradient(180deg, rgba(0,0,0,.02) 8%, rgba(0,0,0,.1) 42%, rgba(0,0,0,.82) 100%),
+          radial-gradient(circle at 24% 30%, rgba(255,255,255,.16), transparent 20%),
+          radial-gradient(circle at 72% 18%, rgba(0,213,255,.2), transparent 18%),
+          radial-gradient(circle at 16% 18%, rgba(255,58,105,.28), transparent 22%);
+      }
+      .dynamic-content {
+        justify-content:flex-end;
+        align-items:flex-start;
+        padding:18px;
+        text-align:left;
+      }
+      .dynamic-title {
+        max-width:100%;
+        font-size:1.18rem;
+        line-height:1.08;
+        letter-spacing:-.02em;
+      }
+      .dynamic-meta {
+        justify-content:flex-start;
+        margin-top:10px;
+        font-size:.72rem;
+        line-height:1.45;
+        opacity:.94;
+      }
+      .dynamic-tags {
+        justify-content:flex-start;
+        margin-top:10px;
+      }
+      .dynamic-tag {
+        padding:5px 8px;
+        background:rgba(255,255,255,.18);
+        border-color:rgba(255,255,255,.2);
+        font-weight:800;
+      }
       .results-grid-video,
       .results-grid-novel { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:16px; }
       .card { overflow:hidden; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--surface); box-shadow:var(--shadow); transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
@@ -570,7 +611,6 @@
           <button class="menu-item menu-toggle" data-menu="menu-e" type="button" aria-expanded="false"><span>一级菜单E</span><span class="menu-caret">⌄</span></button>
           <div class="submenu"><a href="video-list.html?menu=menu-e">二级菜单 E-1</a><a href="video-list.html?menu=menu-e">二级菜单 E-2</a><a href="video-list.html?menu=menu-e">二级菜单 E-3</a></div>
         </div>
-        <a class="menu-item" data-menu="novel-f" href="novel-list.html?menu=novel-f">一级菜单F（小说）</a>
       <button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button></nav>
         <button class="menu-nav menu-nav-next" type="button" aria-label="向右切换菜单">›</button>
       </div>
@@ -601,7 +641,6 @@
             <div class="toggle-group">
               <button class="toggle-btn active" type="button" data-type="post">帖子</button>
               <button class="toggle-btn" type="button" data-type="video">视频</button>
-              <button class="toggle-btn" type="button" data-type="novel">小说</button>
             </div>
           </div>
         </section>
@@ -637,14 +676,14 @@
 
 
 
-    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
+    <button class="requirements-float" type="button" data-open-requirements>通用组件说明</button>
     <div class="requirements-modal-root" aria-hidden="true">
       <div class="requirements-backdrop" data-close-requirements></div>
       <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
         <div class="requirements-head">
-          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
+          <h2 class="requirements-title" id="requirementsTitle">通用组件说明</h2>
           <div class="requirements-actions">
-            <button class="requirements-copy" type="button" data-copy-requirements>复制需求说明</button>
+            <button class="requirements-copy" type="button" data-copy-requirements>复制说明</button>
             <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
             <button class="requirements-close" type="button" data-close-requirements aria-label="关闭需求说明">×</button>
           </div>
@@ -661,8 +700,8 @@
             <ul>
               <li>顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。</li>
               <li>页面标题展示我的点赞说明。</li>
-              <li>内容分类 Tab 包含帖子列表、视频列表和小说列表。</li>
-              <li>帖子列表展示动态内容卡片，视频列表展示视频内容卡片，小说列表展示小说内容卡片。</li>
+              <li>内容分类 Tab 包含帖子列表和视频列表。</li>
+              <li>帖子列表展示动态内容卡片，视频列表展示视频内容卡片。</li>
               <li>分页器用于切换点赞数据。</li>
             </ul>
           </section>
@@ -684,8 +723,8 @@
 核心模块
 - 顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。
 - 页面标题展示我的点赞说明。
-- 内容分类 Tab 包含帖子列表、视频列表和小说列表。
-- 帖子列表展示动态内容卡片，视频列表展示视频内容卡片，小说列表展示小说内容卡片。
+- 内容分类 Tab 包含帖子列表和视频列表。
+- 帖子列表展示动态内容卡片，视频列表展示视频内容卡片。
 - 分页器用于切换点赞数据。
 
 交互规则
@@ -735,7 +774,7 @@
       const menuPrev = document.querySelector(".menu-nav-prev");
       const menuNext = document.querySelector(".menu-nav-next");
       const menuSearchParams = new URLSearchParams(window.location.search);
-      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e", "novel-f"]);
+      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e"]);
 
       const resolveActiveMenu = () => {
         const { pathname } = window.location;
@@ -746,8 +785,6 @@
         if (pathname.endsWith("/index.html") || pathname.endsWith("index.html")) return "home";
         if (pathname.endsWith("/video-list.html") || pathname.endsWith("video-list.html")) return "video-b";
         if (pathname.endsWith("/post-list.html") || pathname.endsWith("post-list.html")) return "post-a";
-        if (pathname.endsWith("/novel-list.html") || pathname.endsWith("novel-list.html")) return "novel-f";
-        if (pathname.endsWith("/novel-detail.html") || pathname.endsWith("novel-detail.html")) return "novel-f";
         if (pathname.endsWith("/search-results.html") || pathname.endsWith("search-results.html")) {
           return menuSearchParams.get("type") === "video" ? "video-b" : "post-a";
         }
@@ -809,6 +846,7 @@
       const searchSubmit = document.querySelector(".search-submit");
       const historyList = document.querySelector(".history-list");
       const clearHistoryBtn = document.querySelector(".history-clear");
+      const searchHead = document.querySelector(".search-head");
       const hotTags = Array.from(document.querySelectorAll(".hot-tag"));
       let searchHistory = ["最新上架", "热门专题", "剧情合集", "会员推荐"];
       const navigateToSearch = (keyword, type = "post", sort = "latest", page = "1") => {
@@ -822,9 +860,11 @@
         if (!searchHistory.length) {
           historyList.innerHTML = "";
           historyList.classList.add("is-empty");
+          if (searchHead) searchHead.hidden = true;
           return;
         }
         historyList.classList.remove("is-empty");
+        if (searchHead) searchHead.hidden = false;
         historyList.innerHTML = searchHistory.map((item, index) => `
           <div class="history-item">
             <div class="history-label"><span>⏱</span><span>${item}</span></div>
@@ -1038,7 +1078,7 @@
         date: `2026-04-${String((index % 20) + 1).padStart(2, "0")}`,
         views: 2400 + index * 246,
         cover: `https://picsum.photos/seed/likes-novel-${index + 1}/600/800`,
-        href: "novel-detail.html",
+        href: "#",
       }));
       const typeButtons = Array.from(document.querySelectorAll(".toggle-btn"));
       const pager = document.getElementById("pager");
@@ -1080,7 +1120,7 @@
             <a class="dynamic-link" href="${item.href}" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">${item.title}</h3>
-              <div class="dynamic-meta"><span>上架时间：${item.date}</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：${item.date}</span></div>
               <div class="dynamic-tags">${item.tags.map((tag) => `<span class="dynamic-tag">${tag}</span>`).join("")}</div>
             </div>
           </article>`).join("");
@@ -1246,5 +1286,6 @@
 
 
     </script>
+    <script src="common-components-requirements.js"></script>
   </body>
 </html>

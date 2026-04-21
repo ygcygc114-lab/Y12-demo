@@ -946,15 +946,18 @@
       .detail-gallery {
         display: grid;
         grid-template-columns: 1fr;
+        justify-items: center;
         gap: 16px;
       }
 
       .detail-image.ratio-16-9 {
+        width: min(100%, 760px);
         aspect-ratio: 16 / 9;
         min-height: auto;
       }
 
       .detail-image.ratio-9-16 {
+        width: min(100%, 760px);
         aspect-ratio: 9 / 16;
         min-height: auto;
         background:
@@ -965,6 +968,7 @@
       }
 
       .detail-image.ratio-1-1 {
+        width: min(100%, 760px);
         aspect-ratio: 1 / 1;
         min-height: auto;
         background:
@@ -975,6 +979,8 @@
       }
 
       .video-wrap {
+        width: min(100%, 760px);
+        margin: 0 auto;
         border-radius: var(--radius-lg);
         overflow: hidden;
         box-shadow: var(--shadow);
@@ -987,6 +993,13 @@
         display: block;
         border-radius: var(--radius-lg);
         background: #0f172a;
+      }
+
+      .detail-card.video-card {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
       }
 
       .pager {
@@ -1435,7 +1448,6 @@
             <a href="video-list.html?menu=menu-e">二级菜单 E-3</a>
           </div>
         </div>
-        <a class="menu-item" data-menu="novel-f" href="novel-list.html?menu=novel-f">一级菜单F（小说）</a>
       <button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button></nav>
         <button class="menu-nav menu-nav-next" type="button" aria-label="向右切换菜单">›</button>
       </div>
@@ -1472,7 +1484,7 @@
           </div>
         </section>
 
-        <section class="detail-card">
+        <section class="detail-card video-card">
           <h1 class="detail-title">动态标题示例一，展示更贴近截图风格的大图封面信息卡的完整详情页内容结构</h1>
         </section>
 
@@ -1505,7 +1517,7 @@
           <div class="detail-image ratio-1-1"></div>
         </section>
 
-        <section class="detail-card">
+        <section class="detail-card video-card">
           <div class="video-wrap">
             <video class="video-player" controls preload="metadata" poster="">
               <source src="" type="video/mp4" />
@@ -1578,14 +1590,14 @@
           <section class="aside-card">
             <h2 class="aside-title">猜你喜欢</h2>
             <div class="guess-list">
-              <a class="guess-item" href="novel-detail.html"><strong>猜你喜欢动态示例 1</strong><span class="guess-meta">频道编辑部 · 2026-04-19</span></a>
-              <a class="guess-item" href="novel-detail.html"><strong>猜你喜欢动态示例 2</strong><span class="guess-meta">专题栏目组 · 2026-04-18</span></a>
-              <a class="guess-item" href="novel-detail.html"><strong>猜你喜欢动态示例 3</strong><span class="guess-meta">推荐位运营 · 2026-04-17</span></a>
-              <a class="guess-item" href="novel-detail.html"><strong>猜你喜欢动态示例 4</strong><span class="guess-meta">频道策划组 · 2026-04-16</span></a>
-              <a class="guess-item" href="novel-detail.html"><strong>猜你喜欢动态示例 5</strong><span class="guess-meta">栏目编辑部 · 2026-04-15</span></a>
-              <a class="guess-item" href="novel-detail.html"><strong>猜你喜欢动态示例 6</strong><span class="guess-meta">热榜频道 · 2026-04-14</span></a>
-              <a class="guess-item" href="novel-detail.html"><strong>猜你喜欢动态示例 7</strong><span class="guess-meta">精选专题组 · 2026-04-13</span></a>
-              <a class="guess-item" href="novel-detail.html"><strong>猜你喜欢动态示例 8</strong><span class="guess-meta">内容运营组 · 2026-04-12</span></a>
+              <a class="guess-item" href="dynamic-detail.html"><strong>猜你喜欢动态示例 1</strong><span class="guess-meta">频道编辑部 · 2026-04-19</span></a>
+              <a class="guess-item" href="dynamic-detail.html"><strong>猜你喜欢动态示例 2</strong><span class="guess-meta">专题栏目组 · 2026-04-18</span></a>
+              <a class="guess-item" href="dynamic-detail.html"><strong>猜你喜欢动态示例 3</strong><span class="guess-meta">推荐位运营 · 2026-04-17</span></a>
+              <a class="guess-item" href="dynamic-detail.html"><strong>猜你喜欢动态示例 4</strong><span class="guess-meta">频道策划组 · 2026-04-16</span></a>
+              <a class="guess-item" href="dynamic-detail.html"><strong>猜你喜欢动态示例 5</strong><span class="guess-meta">栏目编辑部 · 2026-04-15</span></a>
+              <a class="guess-item" href="dynamic-detail.html"><strong>猜你喜欢动态示例 6</strong><span class="guess-meta">热榜频道 · 2026-04-14</span></a>
+              <a class="guess-item" href="dynamic-detail.html"><strong>猜你喜欢动态示例 7</strong><span class="guess-meta">精选专题组 · 2026-04-13</span></a>
+              <a class="guess-item" href="dynamic-detail.html"><strong>猜你喜欢动态示例 8</strong><span class="guess-meta">内容运营组 · 2026-04-12</span></a>
               <div class="guess-ad">
                 <div class="guess-ad-inner">
                   <span class="guess-ad-icon">AD</span>
@@ -1633,14 +1645,14 @@
 
 
 
-    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
+    <button class="requirements-float" type="button" data-open-requirements>通用组件说明</button>
     <div class="requirements-modal-root" aria-hidden="true">
       <div class="requirements-backdrop" data-close-requirements></div>
       <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
         <div class="requirements-head">
-          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
+          <h2 class="requirements-title" id="requirementsTitle">通用组件说明</h2>
           <div class="requirements-actions">
-            <button class="requirements-copy" type="button" data-copy-requirements>复制需求说明</button>
+            <button class="requirements-copy" type="button" data-copy-requirements>复制说明</button>
             <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
             <button class="requirements-close" type="button" data-close-requirements aria-label="关闭需求说明">×</button>
           </div>
@@ -1754,7 +1766,7 @@
       const menuPrev = document.querySelector(".menu-nav-prev");
       const menuNext = document.querySelector(".menu-nav-next");
       const menuSearchParams = new URLSearchParams(window.location.search);
-      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e", "novel-f"]);
+      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e"]);
 
       const resolveActiveMenu = () => {
         const { pathname } = window.location;
@@ -1765,8 +1777,6 @@
         if (pathname.endsWith("/index.html") || pathname.endsWith("index.html")) return "home";
         if (pathname.endsWith("/video-list.html") || pathname.endsWith("video-list.html")) return "video-b";
         if (pathname.endsWith("/post-list.html") || pathname.endsWith("post-list.html")) return "post-a";
-        if (pathname.endsWith("/novel-list.html") || pathname.endsWith("novel-list.html")) return "novel-f";
-        if (pathname.endsWith("/novel-detail.html") || pathname.endsWith("novel-detail.html")) return "novel-f";
         if (pathname.endsWith("/search-results.html") || pathname.endsWith("search-results.html")) {
           return menuSearchParams.get("type") === "video" ? "video-b" : "post-a";
         }
@@ -1829,6 +1839,7 @@
       const searchSubmit = document.querySelector(".search-submit");
       const historyList = document.querySelector(".history-list");
       const clearHistoryBtn = document.querySelector(".history-clear");
+      const searchHead = document.querySelector(".search-head");
       const hotTags = Array.from(document.querySelectorAll(".hot-tag"));
       let searchHistory = ["最新上架", "热门专题", "剧情合集", "会员推荐"];
 
@@ -1844,9 +1855,11 @@
         if (!searchHistory.length) {
           historyList.innerHTML = "";
           historyList.classList.add("is-empty");
+          if (searchHead) searchHead.hidden = true;
           return;
         }
         historyList.classList.remove("is-empty");
+        if (searchHead) searchHead.hidden = false;
         historyList.innerHTML = searchHistory
           .map(
             (item, index) => `
@@ -2216,5 +2229,6 @@
 
 
     </script>
+    <script src="common-components-requirements.js"></script>
   </body>
 </html>

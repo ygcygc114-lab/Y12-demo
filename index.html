@@ -897,18 +897,23 @@
       }
 
       .home-dynamic-grid .card.dynamic-card {
-        min-height: 128px;
-        border-radius: 18px;
+        aspect-ratio: 3 / 4;
+        min-height: 0;
+        border-radius: 22px;
       }
 
       .home-dynamic-grid .dynamic-content {
-        padding: 14px;
+        justify-content: flex-end;
+        align-items: flex-start;
+        padding: 18px;
+        text-align: left;
       }
 
       .home-dynamic-grid .dynamic-title {
-        max-width: 96%;
-        font-size: 0.78rem;
-        line-height: 1.45;
+        max-width: 100%;
+        font-size: 1.18rem;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -916,18 +921,26 @@
       }
 
       .home-dynamic-grid .dynamic-meta {
-        margin-top: 8px;
-        font-size: 0.76rem;
+        justify-content: flex-start;
+        margin-top: 10px;
+        font-size: 0.72rem;
+        line-height: 1.45;
+        font-weight: 700;
+        opacity: 0.94;
       }
 
       .home-dynamic-grid .dynamic-tags {
-        margin-top: 8px;
+        justify-content: flex-start;
+        margin-top: 10px;
         gap: 6px;
       }
 
       .home-dynamic-grid .dynamic-tag {
-        padding: 4px 7px;
+        padding: 5px 8px;
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.2);
         font-size: 0.68rem;
+        font-weight: 800;
       }
 
       .card.dynamic-card::before {
@@ -935,10 +948,10 @@
         position: absolute;
         inset: 0;
         background:
-          linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 24%, transparent 72%, rgba(255, 255, 255, 0.04)),
-          radial-gradient(circle at 24% 65%, rgba(255, 196, 170, 0.22), transparent 18%),
-          radial-gradient(circle at 62% 58%, rgba(255, 120, 120, 0.16), transparent 16%),
-          radial-gradient(circle at 86% 30%, rgba(255, 255, 255, 0.12), transparent 14%);
+          linear-gradient(180deg, rgba(0, 0, 0, 0.02) 8%, rgba(0, 0, 0, 0.1) 42%, rgba(0, 0, 0, 0.82) 100%),
+          radial-gradient(circle at 24% 30%, rgba(255, 255, 255, 0.16), transparent 20%),
+          radial-gradient(circle at 72% 18%, rgba(0, 213, 255, 0.2), transparent 18%),
+          radial-gradient(circle at 16% 18%, rgba(255, 58, 105, 0.28), transparent 22%);
         mix-blend-mode: screen;
       }
 
@@ -1252,9 +1265,59 @@
       .requirements-card li { color: var(--muted); line-height: 1.78; font-size: .94rem; }
       .requirements-card p { margin: 0 0 8px; }
       .requirements-card ul { margin: 0; padding-left: 20px; }
+      .home-requirements-float {
+        position: fixed;
+        right: 22px;
+        bottom: 82px;
+        z-index: 141;
+        min-height: 48px;
+        padding: 0 18px;
+        border: 1px solid rgba(255, 106, 0, 0.28);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.96);
+        color: var(--brand-deep);
+        font-weight: 800;
+        box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
+        cursor: pointer;
+      }
+      .home-requirements-float:hover {
+        color: #fff;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+      }
+      .home-requirements-modal-root {
+        position: fixed;
+        inset: 0;
+        z-index: 250;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .home-requirements-modal-root.open { display: flex; }
+      .home-requirements-content {
+        display: block;
+        min-height: 420px;
+        max-height: 58vh;
+        overflow: auto;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.86);
+        color: var(--text);
+        line-height: 1.8;
+        white-space: pre-wrap;
+        outline: none;
+      }
+      .home-requirements-content:focus {
+        border-color: rgba(255, 122, 0, 0.48);
+        box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.12);
+      }
       @media (max-width: 780px) {
         .requirements-float { right: 14px; bottom: 14px; min-height: 42px; padding: 0 14px; font-size: .88rem; }
+        .home-requirements-float { right: 14px; bottom: 68px; min-height: 42px; padding: 0 14px; font-size: .88rem; }
         .requirements-modal-root { padding: 14px; }
+        .home-requirements-modal-root { padding: 14px; }
         .requirements-modal { padding: 20px; border-radius: 22px; }
         .requirements-head { align-items: flex-start; flex-direction: column; }
         .requirements-actions { width: 100%; }
@@ -1291,6 +1354,8 @@
         position: relative;
         z-index: 1;
         width: min(100%, 1040px);
+        max-height: min(86vh, 820px);
+        overflow: hidden;
         padding: 26px;
         border-radius: 28px;
         border: 1px solid var(--line);
@@ -1325,29 +1390,50 @@
       .promo-grid {
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 14px;
+        gap: 16px;
+        max-height: min(64vh, 650px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 2px 8px 2px 2px;
       }
 
       .promo-ad {
-        min-height: 128px;
-        padding: 14px 10px;
-        border-radius: 18px;
+        min-height: 150px;
+        padding: 18px 12px;
+        border-radius: 22px;
         border: 1px solid var(--line);
         background:
-          linear-gradient(145deg, rgba(255, 122, 0, 0.14), rgba(255, 122, 0, 0.02)),
+          radial-gradient(circle at 50% 20%, rgba(255, 122, 0, 0.16), transparent 38%),
+          linear-gradient(145deg, rgba(255, 122, 0, 0.12), rgba(255, 122, 0, 0.03)),
           var(--surface);
-        box-shadow: var(--shadow);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: 14px;
         text-align: center;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      }
+
+      .promo-ad:hover {
+        transform: translateY(-3px);
+        border-color: rgba(255, 122, 0, 0.35);
+        box-shadow: 0 24px 52px rgba(255, 106, 0, 0.16);
       }
 
       .promo-ad .ad-icon {
-        width: 34px;
-        height: 34px;
+        width: 52px;
+        height: 52px;
+        border-radius: 18px;
+        font-size: 0.96rem;
+        box-shadow: 0 14px 28px rgba(255, 106, 0, 0.24);
+      }
+
+      .promo-ad .ad-name {
+        color: var(--text);
+        font-size: 0.96rem;
+        font-weight: 800;
       }
 
       .bottom-ad-item {
@@ -1649,7 +1735,6 @@
             <a href="video-list.html?menu=menu-e">二级菜单 E-3</a>
           </div>
         </div>
-        <a class="menu-item" data-menu="novel-f" href="novel-list.html?menu=novel-f">一级菜单F（小说）</a>
       <button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button><button class="menu-item menu-item-static" type="button">示例菜单勿点</button></nav>
         <button class="menu-nav menu-nav-next" type="button" aria-label="向右切换菜单">›</button>
       </div>
@@ -1664,7 +1749,7 @@
 
       <section class="section">
         <div class="section-title">
-          <h2>一级菜单A</h2>
+          <h2>一级菜单A（帖子）</h2>
           <a class="section-action" href="post-list.html?menu=post-a">查看更多</a>
         </div>
         <div class="dynamic-grid home-dynamic-grid">
@@ -1672,7 +1757,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例一，展示更贴近截图风格的大图封面信息卡</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-18</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-18</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1685,7 +1770,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例二，适合承载活动预告、频道更新和横幅型动态信息</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-17</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-17</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1698,7 +1783,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例三，整体改为暗色遮罩叠加和居中文字的表现形式</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-16</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-16</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1711,7 +1796,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例四，用于说明 2x2 动态区也可以保持统一的视觉冲击力</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-15</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-15</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1724,7 +1809,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例五，补充首页两行五列动态内容展示</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-14</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-14</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1737,7 +1822,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例六，适合频道更新与专题内容入口</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-13</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-13</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1750,7 +1835,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例七，展示精选动态和活动信息</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-12</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-12</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1763,7 +1848,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例八，用于展示热门标签内容聚合</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-11</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-11</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1776,7 +1861,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例九，保持紧凑卡片信息层级</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-10</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-10</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1789,7 +1874,7 @@
             <a class="dynamic-link" href="dynamic-detail.html" aria-label="查看动态详情"></a>
             <div class="dynamic-content">
               <h3 class="dynamic-title">动态标题示例十，补足两行五列展示节奏</h3>
-              <div class="dynamic-meta"><span>上架时间：2026-04-09</span></div>
+              <div class="dynamic-meta"><span>发布者：内容运营 · 上架时间：2026-04-09</span></div>
               <div class="dynamic-tags">
                 <span class="dynamic-tag">动态标签A</span>
                 <span class="dynamic-tag">动态标签B</span>
@@ -1818,7 +1903,7 @@
 
       <section class="section">
         <div class="section-title">
-          <h2>一级菜单B</h2>
+          <h2>一级菜单B（视频）</h2>
           <a class="section-action" href="video-list.html?menu=video-b">查看更多</a>
         </div>
         <div class="video-grid">
@@ -1837,7 +1922,7 @@
 
       <section class="section">
         <div class="section-title">
-          <h2>一级菜单C</h2>
+          <h2>一级菜单C（视频）</h2>
           <a class="section-action" href="video-list.html?menu=video-c">查看更多</a>
         </div>
         <div class="video-grid">
@@ -1856,7 +1941,7 @@
 
       <section class="section">
         <div class="section-title">
-          <h2>一级菜单D</h2>
+          <h2>一级菜单D（视频）</h2>
           <a class="section-action" href="video-list.html?menu=video-d">查看更多</a>
         </div>
         <div class="video-grid">
@@ -1956,14 +2041,55 @@
 
 
 
-    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
+    <button class="home-requirements-float" type="button" data-open-home-requirements>首页需求说明</button>
+    <div class="home-requirements-modal-root" aria-hidden="true">
+      <div class="requirements-backdrop" data-close-home-requirements></div>
+      <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="homeRequirementsTitle">
+        <div class="requirements-head">
+          <h2 class="requirements-title" id="homeRequirementsTitle">首页需求说明</h2>
+          <div class="requirements-actions">
+            <button class="requirements-copy" type="button" data-copy-home-requirements>复制说明</button>
+            <button class="requirements-save" type="button" data-save-home-requirements>保存文案</button>
+            <button class="requirements-close" type="button" data-close-home-requirements aria-label="关闭首页需求说明">×</button>
+          </div>
+        </div>
+        <div class="home-requirements-content" contenteditable="true" spellcheck="false" data-home-requirements-content>首页需求说明
+
+页面概述
+- 首页用于承载 Y12 的首屏内容聚合，集中展示广告、帖子动态、视频推荐和底部功能入口。
+
+核心模块
+- 顶部栏：展示产品 Logo、产品名称、搜索栏、全部分类、APP 下载和登录/个人中心入口。
+- 顶部菜单栏：展示首页、帖子类菜单、视频类菜单、一级菜单 E 下拉和示例菜单横向切换。
+- 首页广告弹窗：用户首次进入首页时展示推荐广告弹窗，广告为 5 行 5 列，包含广告图标和广告名称。
+- 顶部广告栏：展示横向广告卡片，广告名称位于图标下方。
+- 一级菜单 A：展示动态内容卡片，两行五列，卡片包含动态封面、动态标题、发布者、上架时间和动态标签。
+- 推荐视频：固定模块，展示 1 行 5 列视频内容卡片，支持“换一批”。
+- 每日更新：固定模块，展示 1 行 5 列视频内容卡片，支持“换一批”。
+- 一级菜单 B / C / D：展示视频内容卡片，两行五列，右上角提供“查看更多”按钮。
+- 随机视频：展示 1 行 5 列视频内容卡片，支持“换一批”。
+- 底部广告栏：展示深色广告入口卡片。
+- 页脚：展示产品名称、联系客服、官方群组、商务合作入口。
+
+交互规则
+- 搜索框支持历史记录、热门搜索、输入关键词跳转搜索结果页。
+- 点击全部分类进入全部分类页。
+- 登录后顶部入口切换为个人中心，个人中心包含观看历史、我的点赞和退出账号。
+- 点击动态卡片进入动态详情页，点击视频卡片进入视频详情页。
+- 点击“查看更多”跳转对应列表页。
+- 点击“换一批”只刷新当前模块内容。</div>
+        <div class="requirements-status" data-home-requirements-status>文案可直接编辑，点击“保存文案”后会保存在当前浏览器。</div>
+      </section>
+    </div>
+
+    <button class="requirements-float" type="button" data-open-requirements>通用组件说明</button>
     <div class="requirements-modal-root" aria-hidden="true">
       <div class="requirements-backdrop" data-close-requirements></div>
       <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
         <div class="requirements-head">
-          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
+          <h2 class="requirements-title" id="requirementsTitle">通用组件说明</h2>
           <div class="requirements-actions">
-            <button class="requirements-copy" type="button" data-copy-requirements>复制需求说明</button>
+            <button class="requirements-copy" type="button" data-copy-requirements>复制说明</button>
             <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
             <button class="requirements-close" type="button" data-close-requirements aria-label="关闭需求说明">×</button>
           </div>
@@ -1979,7 +2105,7 @@
             <h3>核心模块</h3>
             <ul>
               <li>顶部栏：展示产品 Logo、产品名称、搜索栏、APP 下载和登录/个人中心入口。</li>
-              <li>顶部菜单栏：展示首页、帖子类菜单、视频类菜单、小说菜单、一级菜单 E 下拉和示例菜单横向切换。</li>
+              <li>顶部菜单栏：展示首页、帖子类菜单、视频类菜单、一级菜单 E 下拉和示例菜单横向切换。</li>
               <li>广告轮播：页面顶部广告区域按 1:1 广告卡片自动轮播展示。</li>
               <li>一级菜单A：展示动态内容卡片，两行五列，卡片包含动态封面、标题、上架时间和 3 个标签。</li>
               <li>推荐视频：固定模块，展示 1 行 5 列视频卡片，支持“换一批”。</li>
@@ -2007,7 +2133,7 @@
 
 核心模块
 - 顶部栏：展示产品 Logo、产品名称、搜索栏、APP 下载和登录/个人中心入口。
-- 顶部菜单栏：展示首页、帖子类菜单、视频类菜单、小说菜单、一级菜单 E 下拉和示例菜单横向切换。
+- 顶部菜单栏：展示首页、帖子类菜单、视频类菜单、一级菜单 E 下拉和示例菜单横向切换。
 - 广告轮播：页面顶部广告区域按 1:1 广告卡片自动轮播展示。
 - 一级菜单A：展示动态内容卡片，两行五列，卡片包含动态封面、标题、上架时间和 3 个标签。
 - 推荐视频：固定模块，展示 1 行 5 列视频卡片，支持“换一批”。
@@ -2098,7 +2224,15 @@
         { icon: "SP", name: "广告V" },
         { icon: "ID", name: "广告W" },
         { icon: "PR", name: "广告X" },
-        { icon: "AD", name: "广告Y" }
+        { icon: "AD", name: "广告Y" },
+        { icon: "AA", name: "广告Z" },
+        { icon: "AB", name: "广告AA" },
+        { icon: "AC", name: "广告AB" },
+        { icon: "AE", name: "广告AC" },
+        { icon: "AF", name: "广告AD" },
+        { icon: "AG", name: "广告AE" },
+        { icon: "AH", name: "广告AF" },
+        { icon: "AJ", name: "广告AG" }
       ];
 
       const buildAdMarkup = (item, className = "ad-box") => `
@@ -2288,7 +2422,7 @@
       const menuPrev = document.querySelector(".menu-nav-prev");
       const menuNext = document.querySelector(".menu-nav-next");
       const menuSearchParams = new URLSearchParams(window.location.search);
-      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e", "novel-f"]);
+      const validMenus = new Set(["home", "post-a", "video-b", "video-c", "video-d", "menu-e"]);
 
       const resolveActiveMenu = () => {
         const { pathname } = window.location;
@@ -2298,8 +2432,6 @@
 
         if (pathname.endsWith("/index.html") || pathname.endsWith("index.html")) return "home";
         if (pathname.endsWith("/video-list.html") || pathname.endsWith("video-list.html")) return "video-b";
-        if (pathname.endsWith("/novel-list.html") || pathname.endsWith("novel-list.html")) return "novel-f";
-        if (pathname.endsWith("/novel-detail.html") || pathname.endsWith("novel-detail.html")) return "novel-f";
         if (pathname.endsWith("/post-list.html") || pathname.endsWith("post-list.html")) return "post-a";
         if (pathname.endsWith("/search-results.html") || pathname.endsWith("search-results.html")) {
           return menuSearchParams.get("type") === "video" ? "video-b" : "post-a";
@@ -2363,6 +2495,7 @@
       const searchSubmit = document.querySelector(".search-submit");
       const historyList = document.querySelector(".history-list");
       const clearHistoryBtn = document.querySelector(".history-clear");
+      const searchHead = document.querySelector(".search-head");
       const hotTags = Array.from(document.querySelectorAll(".hot-tag"));
       let searchHistory = ["最新上架", "热门专题", "剧情合集", "会员推荐"];
 
@@ -2379,10 +2512,12 @@
         if (!searchHistory.length) {
           historyList.innerHTML = "";
           historyList.classList.add("is-empty");
+          if (searchHead) searchHead.hidden = true;
           return;
         }
 
         historyList.classList.remove("is-empty");
+        if (searchHead) searchHead.hidden = false;
         historyList.innerHTML = searchHistory
           .map(
             (item, index) => `
@@ -2741,5 +2876,109 @@
 
 
     </script>
+    <script>
+      (() => {
+        const root = document.querySelector('.home-requirements-modal-root');
+        const openBtn = document.querySelector('[data-open-home-requirements]');
+        const closeBtns = document.querySelectorAll('[data-close-home-requirements]');
+        const saveBtn = document.querySelector('[data-save-home-requirements]');
+        const copyBtn = document.querySelector('[data-copy-home-requirements]');
+        const content = document.querySelector('[data-home-requirements-content]');
+        const status = document.querySelector('[data-home-requirements-status]');
+        if (!root || !openBtn || !content) return;
+
+        const storageKey = 'Y12_HOME_PAGE_REQUIREMENTS';
+        const saved = localStorage.getItem(storageKey);
+        if (saved) content.textContent = saved;
+
+        const setStatus = (message, type) => {
+          if (!status) return;
+          status.textContent = message;
+          status.classList.toggle('is-success', type === 'success');
+          status.classList.toggle('is-error', type === 'error');
+        };
+
+        const closeFloatingLayers = () => {
+          document.querySelector('.searchbox')?.classList.remove('open');
+          document.querySelector('.account-actions')?.classList.remove('open');
+          document.querySelector('.menu-dropdown')?.classList.remove('open');
+          document.querySelector('.requirements-modal-root')?.classList.remove('open');
+        };
+
+        const save = (silent = false) => {
+          try {
+            localStorage.setItem(storageKey, content.innerText.trim());
+            if (!silent) setStatus('首页需求说明已保存。', 'success');
+            return true;
+          } catch (error) {
+            if (!silent) setStatus('保存失败，请检查浏览器本地存储权限。', 'error');
+            return false;
+          }
+        };
+
+        const open = () => {
+          closeFloatingLayers();
+          root.classList.add('open');
+          root.setAttribute('aria-hidden', 'false');
+          document.body.classList.add('requirements-open');
+        };
+
+        const close = () => {
+          save(true);
+          root.classList.remove('open');
+          root.setAttribute('aria-hidden', 'true');
+          document.body.classList.remove('requirements-open');
+        };
+
+        const fallbackCopy = (text) => {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          const ok = document.execCommand('copy');
+          textarea.remove();
+          return ok;
+        };
+
+        const setCopyState = (state) => {
+          if (!copyBtn) return;
+          copyBtn.classList.remove('is-success', 'is-error');
+          if (state === 'success') {
+            copyBtn.textContent = '已复制';
+            copyBtn.classList.add('is-success');
+          } else {
+            copyBtn.textContent = '复制失败';
+            copyBtn.classList.add('is-error');
+          }
+          window.setTimeout(() => {
+            copyBtn.textContent = '复制说明';
+            copyBtn.classList.remove('is-success', 'is-error');
+          }, 1400);
+        };
+
+        openBtn.addEventListener('click', open);
+        closeBtns.forEach((button) => button.addEventListener('click', close));
+        saveBtn?.addEventListener('click', () => save(false));
+        copyBtn?.addEventListener('click', async () => {
+          const text = content.innerText.trim();
+          if (!text) { setCopyState('error'); return; }
+          try {
+            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+            else if (!fallbackCopy(text)) throw new Error('fallback copy failed');
+            setCopyState('success');
+          } catch (error) {
+            try { setCopyState(fallbackCopy(text) ? 'success' : 'error'); }
+            catch (_) { setCopyState('error'); }
+          }
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && root.classList.contains('open')) close();
+        });
+      })();
+    </script>
+    <script src="common-components-requirements.js"></script>
   </body>
 </html>
