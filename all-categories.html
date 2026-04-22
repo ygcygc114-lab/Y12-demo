@@ -405,73 +405,76 @@
       }
       .results-title { margin:0; font-size:1.6rem; }
       .results-keyword { color:var(--brand); }
-      .tag-filters {
+      .category-filter-panel {
         display:grid;
-        gap:14px;
+        grid-template-columns:minmax(0, 1fr) auto;
+        gap:18px;
+        align-items:start;
         margin-top:18px;
       }
-      .tag-filter-row {
+      .filter-status-grid { display:grid; gap:12px; }
+      .filter-status-row {
         display:grid;
-        grid-template-columns:auto minmax(0, 1fr);
-        gap:12px;
+        grid-template-columns:54px minmax(0, 1fr);
+        gap:10px;
         align-items:center;
       }
-      .tag-filter-label {
+      .filter-status-label {
         color:var(--muted);
         font-size:.9rem;
         font-weight:800;
         white-space:nowrap;
       }
-      .tag-filter-scroller {
-        display:grid;
-        grid-template-columns:34px minmax(0, 1fr) 34px;
-        gap:8px;
-        align-items:center;
-      }
-      .tag-scroll-btn {
-        width:34px;
-        height:34px;
-        border-radius:999px;
-        border:1px solid var(--line);
-        background:#fff;
-        color:var(--muted);
-        font-weight:900;
-        cursor:pointer;
-      }
-      .tag-scroll-btn:disabled { opacity:.38; cursor:default; }
-      .tag-filter-track {
-        display:flex;
-        gap:10px;
+      .filter-status-value { display:flex; flex-wrap:wrap; gap:10px; align-items:center; min-width:0; }
+      .filter-status-value.is-scroll {
+        flex-wrap:nowrap;
         overflow-x:auto;
         scrollbar-width:none;
         -ms-overflow-style:none;
-        scroll-behavior:smooth;
         padding-bottom:2px;
       }
-      .tag-filter-track::-webkit-scrollbar { display:none; }
-      .tag-category-btn,
-      .tag-chip-btn {
+      .filter-status-value.is-scroll::-webkit-scrollbar { display:none; }
+      .filter-pill,
+      .filter-open-btn {
         flex:0 0 auto;
         display:inline-flex;
         align-items:center;
         justify-content:center;
-        min-height:38px;
-        padding:0 14px;
+        min-height:40px;
+        padding:0 16px;
         border-radius:999px;
         border:1px solid var(--line);
         background:#fff;
         color:var(--muted);
-        font-size:.88rem;
+        font-size:.9rem;
         font-weight:800;
         cursor:pointer;
         white-space:nowrap;
       }
-      .tag-category-btn.active,
-      .tag-chip-btn.active {
+      .filter-pill.soft-active {
+        color:var(--brand-deep);
+        border-color:rgba(255,122,0,.26);
+        background:#fff7ed;
+      }
+      .filter-pill.active {
         color:#fff;
         border-color:transparent;
         background:linear-gradient(135deg, var(--brand), var(--brand-deep));
       }
+      .filter-open-btn {
+        min-width:96px;
+        color:#fff;
+        border-color:transparent;
+        background:linear-gradient(135deg, var(--brand), var(--brand-deep));
+        box-shadow:0 10px 20px rgba(255,106,0,.2);
+      }
+      .category-title-row {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:16px;
+      }
+      .category-title-row .results-title { min-width:0; }
       .toolbar {
         display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-top:16px;
       }
@@ -484,6 +487,67 @@
       }
       .toggle-btn.active, .sort-btn.active, .pager-btn.active {
         color:#fff; border-color:transparent; background:linear-gradient(135deg, var(--brand), var(--brand-deep));
+      }
+      .filter-modal-root {
+        position:fixed;
+        inset:0;
+        z-index:2200;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        padding:24px;
+      }
+      .filter-modal-root.open { display:flex; }
+      .filter-backdrop { position:absolute; inset:0; background:rgba(15,23,42,.42); backdrop-filter:blur(8px); }
+      .filter-modal {
+        position:relative;
+        width:min(880px, 100%);
+        max-height:min(760px, calc(100vh - 48px));
+        display:flex;
+        flex-direction:column;
+        gap:18px;
+        padding:24px;
+        border-radius:28px;
+        border:1px solid rgba(255,255,255,.72);
+        background:rgba(255,255,255,.96);
+        box-shadow:0 26px 80px rgba(15,23,42,.24);
+      }
+      .filter-modal-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+      .filter-modal-title { margin:0; font-size:1.35rem; }
+      .filter-close {
+        width:38px;
+        height:38px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--text);
+        font-size:1.35rem;
+        font-weight:900;
+        cursor:pointer;
+      }
+      .filter-modal-body {
+        display:grid;
+        gap:18px;
+        overflow-y:auto;
+        padding-right:6px;
+      }
+      .filter-modal-category { display:grid; gap:10px; }
+      .filter-modal-category h3 { margin:0; font-size:1rem; }
+      .filter-modal-tags { display:flex; flex-wrap:wrap; gap:10px; }
+      .filter-tag-btn {
+        min-height:38px;
+        padding:0 14px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--muted);
+        font-weight:800;
+        cursor:pointer;
+      }
+      .filter-tag-btn.active {
+        color:#fff;
+        border-color:transparent;
+        background:linear-gradient(135deg, var(--brand), var(--brand-deep));
       }
       .results-grid-post { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:16px; }
       .card.dynamic-card {
@@ -753,8 +817,11 @@
       .requirements-card p { margin: 0 0 8px; }
       .requirements-card ul { margin: 0; padding-left: 20px; }
       @media (max-width: 780px) {
-        .tag-filter-row { grid-template-columns:1fr; gap:8px; }
-        .tag-filter-scroller { grid-template-columns:30px minmax(0, 1fr) 30px; }
+        .category-filter-panel { grid-template-columns:1fr; align-items:stretch; }
+        .filter-open-btn { width:100%; }
+        .filter-status-row { grid-template-columns:46px minmax(0, 1fr); }
+        .filter-modal-root { padding:14px; }
+        .filter-modal { padding:20px; border-radius:22px; }
         .requirements-float { right: 14px; bottom: 14px; min-height: 42px; padding: 0 14px; font-size: .88rem; }
         .requirements-modal-root { padding: 14px; }
         .requirements-modal { padding: 20px; border-radius: 22px; }
@@ -896,33 +963,22 @@
     <main class="container page">
       <div class="results-shell">
         <section class="results-header">
-          <h1 class="results-title">全部分类</h1>
-          <div class="tag-filters">
-            <div class="tag-filter-row">
-              <span class="tag-filter-label">标签类别</span>
-              <div class="tag-filter-scroller">
-                <button class="tag-scroll-btn" type="button" data-scroll-target="categoryTrack" data-scroll-dir="-1" aria-label="向左切换标签类别">‹</button>
-                <div class="tag-filter-track" id="categoryTrack"></div>
-                <button class="tag-scroll-btn" type="button" data-scroll-target="categoryTrack" data-scroll-dir="1" aria-label="向右切换标签类别">›</button>
-              </div>
-            </div>
-            <div class="tag-filter-row">
-              <span class="tag-filter-label">对应标签</span>
-              <div class="tag-filter-scroller">
-                <button class="tag-scroll-btn" type="button" data-scroll-target="tagTrack" data-scroll-dir="-1" aria-label="向左切换标签">‹</button>
-                <div class="tag-filter-track" id="tagTrack"></div>
-                <button class="tag-scroll-btn" type="button" data-scroll-target="tagTrack" data-scroll-dir="1" aria-label="向右切换标签">›</button>
+          <div class="category-title-row">
+            <h1 class="results-title" data-selected-filter-title>全部</h1>
+            <button class="filter-open-btn" type="button" data-open-filter>筛选</button>
+          </div>
+          <div class="category-filter-panel">
+            <div class="filter-status-grid">
+              <div class="filter-status-row">
+                <span class="filter-status-label">分类</span>
+                <div class="filter-status-value">
+                  <button class="filter-pill toggle-btn active" type="button" data-type="video">长视频</button>
+                  <button class="filter-pill toggle-btn" type="button" data-type="post">帖子</button>
+                </div>
               </div>
             </div>
           </div>
           <div class="toolbar">
-            <div class="filter-block">
-              <span class="filter-label">分类筛选</span>
-              <div class="toggle-group">
-                <button class="toggle-btn active" type="button" data-type="post">帖子</button>
-                <button class="toggle-btn" type="button" data-type="video">视频</button>
-              </div>
-            </div>
             <div class="filter-block">
               <div class="sort-group">
                 <button class="sort-btn active" type="button" data-sort="latest">最新上架</button>
@@ -943,6 +999,17 @@
         <div class="pager" id="pager"></div>
       </div>
     </main>
+
+    <div class="filter-modal-root" aria-hidden="true">
+      <div class="filter-backdrop" data-close-filter></div>
+      <section class="filter-modal" role="dialog" aria-modal="true" aria-labelledby="filterModalTitle">
+        <div class="filter-modal-head">
+          <h2 class="filter-modal-title" id="filterModalTitle">筛选</h2>
+          <button class="filter-close" type="button" data-close-filter aria-label="关闭筛选弹窗">×</button>
+        </div>
+        <div class="filter-modal-body" id="filterModalBody"></div>
+      </section>
+    </div>
 
     
     <section class="container bottom-ad-section">
@@ -967,12 +1034,12 @@
 
 
 
-    <button class="requirements-float" type="button" data-open-requirements>通用组件说明</button>
+    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
     <div class="requirements-modal-root" aria-hidden="true">
       <div class="requirements-backdrop" data-close-requirements></div>
       <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
         <div class="requirements-head">
-          <h2 class="requirements-title" id="requirementsTitle">通用组件说明</h2>
+          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
           <div class="requirements-actions">
             <button class="requirements-copy" type="button" data-copy-requirements>复制说明</button>
             <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
@@ -990,9 +1057,10 @@
             <h3>核心模块</h3>
             <ul>
               <li>顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。</li>
-              <li>页面标题展示全部分类，筛选区展示分类筛选和排序筛选。</li>
-              <li>分类筛选包含帖子、视频，默认选中帖子。</li>
-              <li>点击视频、帖子分类时，分别展示对应的视频卡片和动态卡片列表。</li>
+              <li>页面标题默认展示全部，用户选择标签后展示当前标签文案。</li>
+              <li>分类包含长视频、帖子，默认选中长视频。</li>
+              <li>右上角筛选按钮打开分类弹窗，弹窗展示分类按钮、全部重置入口、全部标签类别和对应标签。</li>
+              <li>点击标签后弹窗关闭，内容列表按当前标签刷新。</li>
               <li>排序栏包含最新上架、最多点赞、最多观看、随机展示。</li>
               <li>分页器用于切换当前分类列表页码。</li>
             </ul>
@@ -1000,7 +1068,8 @@
           <section class="requirements-card">
             <h3>交互规则</h3>
             <ul>
-              <li>点击分类筛选按钮切换对应内容列表，并同步 URL 参数。</li>
+              <li>点击分类按钮切换长视频或帖子内容列表，并同步 URL 参数。</li>
+              <li>点击筛选弹窗内任意标签后，顶部显示已选类别和标签。</li>
               <li>点击排序按钮更新当前分类结果。</li>
               <li>点击分类按钮切换对应内容列表，点击内容卡片进入对应详情页。</li>
             </ul>
@@ -1015,14 +1084,16 @@
 
 核心模块
 - 顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。
-- 页面标题展示全部分类，筛选区展示分类筛选和排序筛选。
-- 分类筛选包含帖子、视频，默认选中帖子。
-- 点击视频、帖子分类时，分别展示对应的视频卡片和动态卡片列表。
+- 页面标题默认展示全部，用户选择标签后展示当前标签文案。
+- 分类包含长视频、帖子，默认选中长视频。
+- 右上角筛选按钮打开分类弹窗，弹窗展示分类按钮、全部重置入口、全部标签类别和对应标签。
+- 点击标签后弹窗关闭，内容列表按当前标签刷新。
 - 排序栏包含最新上架、最多点赞、最多观看、随机展示。
 - 分页器用于切换当前分类列表页码。
 
 交互规则
-- 点击分类筛选按钮切换对应内容列表，并同步 URL 参数。
+- 点击分类按钮切换长视频或帖子内容列表，并同步 URL 参数。
+- 点击筛选弹窗内任意标签后，顶部显示已选类别和标签。
 - 点击排序按钮更新当前分类结果。
 - 点击分类按钮切换对应内容列表，点击内容卡片进入对应详情页。</script>
     </div>
@@ -1418,23 +1489,29 @@
       const params = new URLSearchParams(window.location.search);
       const state = {
         q: params.get("q") || "全部",
-        type: ["post", "video"].includes(params.get("type")) ? params.get("type") : "post",
+        type: ["post", "video"].includes(params.get("type")) ? params.get("type") : "video",
         sort: params.get("sort") || "latest",
         page: Number(params.get("page") || "1"),
-        tagCategory: params.get("tagCategory") || "推荐专题",
+        tagCategory: params.get("tagCategory") || "全部",
         tag: params.get("tag") || "全部",
       };
       searchInput.value = "";
 
       const tagCategoryMap = {
-        "推荐专题": ["全部", "主编推荐", "平台热播", "人气更新", "榜单精选", "本周热议", "站内合集", "精品专题"],
-        "更新节奏": ["全部", "今日更新", "昨日热门", "本周更新", "持续加更", "抢先上线", "深夜专区", "午间速看"],
-        "内容题材": ["全部", "剧情向", "户外向", "访谈向", "合集向", "剪辑向", "纪实向", "栏目向", "轻剧情"],
-        "观看偏好": ["全部", "高播放", "高点赞", "新上架", "随机推荐", "收藏热门", "沉浸体验", "短时高能"],
-        "运营标签": ["全部", "平台推荐", "会员精选", "编辑精选", "专题推荐", "活动入口", "新片速递", "热搜关联", "高分推荐"]
+        "推荐专题": ["全部", "主编推荐", "平台热播", "人气更新", "榜单精选", "本周热议", "站内合集", "精品专题", "编辑关注", "高分内容", "热门入口"],
+        "更新节奏": ["全部", "今日更新", "昨日热门", "本周更新", "持续加更", "抢先上线", "深夜专区", "午间速看", "周末补档", "早间精选", "夜间热播"],
+        "内容题材": ["全部", "剧情向", "户外向", "访谈向", "合集向", "剪辑向", "纪实向", "栏目向", "轻剧情", "沉浸向", "专题向"],
+        "观看偏好": ["全部", "高播放", "高点赞", "新上架", "随机推荐", "收藏热门", "沉浸体验", "短时高能", "长线观看", "高完播", "回看热门"],
+        "运营标签": ["全部", "平台推荐", "会员精选", "编辑精选", "专题推荐", "活动入口", "新片速递", "热搜关联", "高分推荐", "频道精选", "限时推荐"],
+        "频道类型": ["全部", "长视频", "帖子精选", "频道专题", "内容合集", "连载内容", "互动内容", "官方推荐", "用户热门", "新锐频道", "精选频道"],
+        "热度维度": ["全部", "最多观看", "最多点赞", "评论活跃", "收藏提升", "搜索热词", "转发较高", "榜单上升", "持续升温", "近期爆款", "稳定热门"],
+        "发布时间": ["全部", "今天", "昨天", "近三天", "本周", "上周", "本月", "最近上线", "持续更新", "经典回看", "限时内容"],
+        "内容来源": ["全部", "官方发布", "运营推荐", "用户投稿", "合作内容", "专题策划", "频道收录", "站内精选", "编辑整理", "平台同步", "活动推荐"],
+        "推荐场景": ["全部", "首页推荐", "详情推荐", "列表推荐", "搜索推荐", "猜你喜欢", "热门榜单", "新人推荐", "会员推荐", "随机推荐", "广告关联"]
       };
-      if (!tagCategoryMap[state.tagCategory]) state.tagCategory = "推荐专题";
-      if (!tagCategoryMap[state.tagCategory].includes(state.tag)) state.tag = "全部";
+      if (state.tagCategory !== "全部" && !tagCategoryMap[state.tagCategory]) state.tagCategory = "全部";
+      if (state.tagCategory !== "全部" && !tagCategoryMap[state.tagCategory].includes(state.tag)) state.tag = "全部";
+      if (state.tagCategory === "全部") state.tag = "全部";
 
       const categoryKeys = Object.keys(tagCategoryMap);
       const postResults = Array.from({ length: 48 }, (_, index) => {
@@ -1485,12 +1562,16 @@
       const postContainer = document.getElementById("postResults");
       const videoContainer = document.getElementById("videoResults");
       const novelContainer = document.getElementById("novelResults");
-      const categoryTrack = document.getElementById("categoryTrack");
-      const tagTrack = document.getElementById("tagTrack");
+      const selectedFilterTitle = document.querySelector("[data-selected-filter-title]");
+      const filterModalRoot = document.querySelector(".filter-modal-root");
+      const filterModalBody = document.getElementById("filterModalBody");
+      const openFilterButton = document.querySelector("[data-open-filter]");
+      const closeFilterButtons = Array.from(document.querySelectorAll("[data-close-filter]"));
 
       const formatCount = (num) => (num >= 10000 ? `${(num / 10000).toFixed(1)}万` : `${num}`);
       const filterData = (items) => items.filter((item) => {
-        if (item.tagCategory !== state.tagCategory) return false;
+        if (state.tagCategory === "全部" && state.tag === "全部") return true;
+        if (state.tagCategory !== "全部" && item.tagCategory !== state.tagCategory) return false;
         if (state.tag === "全部") return true;
         return Array.isArray(item.tags) && item.tags.includes(state.tag);
       });
@@ -1517,31 +1598,59 @@
         window.history.replaceState({}, "", `${window.location.pathname}?${next.toString()}`);
       };
 
-      const updateScrollButtons = (trackId) => {
-        const track = document.getElementById(trackId);
-        if (!track) return;
-        const prev = document.querySelector(`[data-scroll-target="${trackId}"][data-scroll-dir="-1"]`);
-        const next = document.querySelector(`[data-scroll-target="${trackId}"][data-scroll-dir="1"]`);
-        if (prev) prev.disabled = track.scrollLeft <= 4;
-        if (next) next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      const openFilterModal = () => {
+        if (!filterModalRoot) return;
+        searchBox?.classList.remove("open");
+        menuDropdown?.classList.remove("open");
+        menuToggle?.setAttribute("aria-expanded", "false");
+        closeAccountMenu();
+        filterModalRoot.classList.add("open");
+        filterModalRoot.setAttribute("aria-hidden", "false");
       };
 
-      const renderTagCategories = () => {
-        if (!categoryTrack) return;
-        categoryTrack.innerHTML = categoryKeys.map((category) => `
-          <button class="tag-category-btn${category === state.tagCategory ? " active" : ""}" type="button" data-tag-category="${category}">${category}</button>
-        `).join("");
-        updateScrollButtons("categoryTrack");
+      const closeFilterModal = () => {
+        if (!filterModalRoot) return;
+        filterModalRoot.classList.remove("open");
+        filterModalRoot.setAttribute("aria-hidden", "true");
       };
 
-      const renderTags = () => {
-        if (!tagTrack) return;
-        const tags = tagCategoryMap[state.tagCategory] || ["全部"];
-        if (!tags.includes(state.tag)) state.tag = "全部";
-        tagTrack.innerHTML = tags.map((tag) => `
-          <button class="tag-chip-btn${tag === state.tag ? " active" : ""}" type="button" data-tag-value="${tag}">${tag}</button>
-        `).join("");
-        updateScrollButtons("tagTrack");
+      const renderSelectedTitle = () => {
+        if (!selectedFilterTitle) return;
+        selectedFilterTitle.textContent = state.tag === "全部" ? "全部" : state.tag;
+      };
+
+      const renderFilterModal = () => {
+        if (!filterModalBody) return;
+        const typeSection = `
+          <section class="filter-modal-category">
+            <h3>分类</h3>
+            <div class="filter-modal-tags">
+              <button class="filter-tag-btn${state.type === "video" ? " active" : ""}" type="button" data-modal-type="video">长视频</button>
+              <button class="filter-tag-btn${state.type === "post" ? " active" : ""}" type="button" data-modal-type="post">帖子</button>
+            </div>
+          </section>
+        `;
+        const resetSection = `
+          <section class="filter-modal-category">
+            <h3>全部</h3>
+            <div class="filter-modal-tags">
+              <button class="filter-tag-btn${state.tagCategory === "全部" && state.tag === "全部" ? " active" : ""}" type="button" data-filter-category="全部" data-filter-tag="全部">全部</button>
+            </div>
+          </section>
+        `;
+        filterModalBody.innerHTML = typeSection + resetSection + categoryKeys.map((category) => {
+          const tags = tagCategoryMap[category] || ["全部"];
+          return `
+            <section class="filter-modal-category">
+              <h3>${category}</h3>
+              <div class="filter-modal-tags">
+                ${tags.map((tag) => `
+                  <button class="filter-tag-btn${category === state.tagCategory && tag === state.tag ? " active" : ""}" type="button" data-filter-category="${category}" data-filter-tag="${tag}">${tag}</button>
+                `).join("")}
+              </div>
+            </section>
+          `;
+        }).join("");
       };
 
       const renderPager = () => {
@@ -1627,8 +1736,8 @@
       };
 
       const render = () => {
-        renderTagCategories();
-        renderTags();
+        renderSelectedTitle();
+        renderFilterModal();
         const data = currentData();
         const totalPages = pageCount();
         state.page = Math.min(Math.max(1, state.page), totalPages);
@@ -1655,38 +1764,25 @@
         renderPager();
       };
 
-      categoryTrack?.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-tag-category]");
+      openFilterButton?.addEventListener("click", openFilterModal);
+      closeFilterButtons.forEach((button) => button.addEventListener("click", closeFilterModal));
+      filterModalBody?.addEventListener("click", (event) => {
+        const typeButton = event.target.closest("[data-modal-type]");
+        if (typeButton) {
+          state.type = typeButton.dataset.modalType;
+          state.page = 1;
+          syncUrl();
+          render();
+          return;
+        }
+        const button = event.target.closest("[data-filter-category][data-filter-tag]");
         if (!button) return;
-        state.tagCategory = button.dataset.tagCategory;
-        state.tag = "全部";
+        state.tagCategory = button.dataset.filterCategory;
+        state.tag = button.dataset.filterTag;
         state.page = 1;
         syncUrl();
         render();
-      });
-
-      tagTrack?.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-tag-value]");
-        if (!button) return;
-        state.tag = button.dataset.tagValue;
-        state.page = 1;
-        syncUrl();
-        render();
-      });
-
-      document.querySelectorAll("[data-scroll-target]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const track = document.getElementById(button.dataset.scrollTarget);
-          if (!track) return;
-          const delta = Number(button.dataset.scrollDir || "1") * Math.max(220, track.clientWidth * 0.55);
-          track.scrollBy({ left: delta, behavior: "smooth" });
-          window.setTimeout(() => updateScrollButtons(button.dataset.scrollTarget), 220);
-        });
-      });
-
-      ["categoryTrack", "tagTrack"].forEach((trackId) => {
-        const track = document.getElementById(trackId);
-        track?.addEventListener("scroll", () => updateScrollButtons(trackId));
+        closeFilterModal();
       });
 
       typeButtons.forEach((btn) => btn.addEventListener("click", () => {
@@ -1702,6 +1798,10 @@
         syncUrl();
         render();
       }));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeFilterModal();
+      });
 
       syncUrl();
       render();

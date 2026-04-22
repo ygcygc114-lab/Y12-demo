@@ -1265,59 +1265,9 @@
       .requirements-card li { color: var(--muted); line-height: 1.78; font-size: .94rem; }
       .requirements-card p { margin: 0 0 8px; }
       .requirements-card ul { margin: 0; padding-left: 20px; }
-      .home-requirements-float {
-        position: fixed;
-        right: 22px;
-        bottom: 82px;
-        z-index: 141;
-        min-height: 48px;
-        padding: 0 18px;
-        border: 1px solid rgba(255, 106, 0, 0.28);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.96);
-        color: var(--brand-deep);
-        font-weight: 800;
-        box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
-        cursor: pointer;
-      }
-      .home-requirements-float:hover {
-        color: #fff;
-        border-color: transparent;
-        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
-      }
-      .home-requirements-modal-root {
-        position: fixed;
-        inset: 0;
-        z-index: 250;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-      }
-      .home-requirements-modal-root.open { display: flex; }
-      .home-requirements-content {
-        display: block;
-        min-height: 420px;
-        max-height: 58vh;
-        overflow: auto;
-        padding: 18px;
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.86);
-        color: var(--text);
-        line-height: 1.8;
-        white-space: pre-wrap;
-        outline: none;
-      }
-      .home-requirements-content:focus {
-        border-color: rgba(255, 122, 0, 0.48);
-        box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.12);
-      }
       @media (max-width: 780px) {
         .requirements-float { right: 14px; bottom: 14px; min-height: 42px; padding: 0 14px; font-size: .88rem; }
-        .home-requirements-float { right: 14px; bottom: 68px; min-height: 42px; padding: 0 14px; font-size: .88rem; }
         .requirements-modal-root { padding: 14px; }
-        .home-requirements-modal-root { padding: 14px; }
         .requirements-modal { padding: 20px; border-radius: 22px; }
         .requirements-head { align-items: flex-start; flex-direction: column; }
         .requirements-actions { width: 100%; }
@@ -2038,56 +1988,12 @@
         </section>
       </div>
     </footer>
-
-
-
-    <button class="home-requirements-float" type="button" data-open-home-requirements>首页需求说明</button>
-    <div class="home-requirements-modal-root" aria-hidden="true">
-      <div class="requirements-backdrop" data-close-home-requirements></div>
-      <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="homeRequirementsTitle">
-        <div class="requirements-head">
-          <h2 class="requirements-title" id="homeRequirementsTitle">首页需求说明</h2>
-          <div class="requirements-actions">
-            <button class="requirements-copy" type="button" data-copy-home-requirements>复制说明</button>
-            <button class="requirements-save" type="button" data-save-home-requirements>保存文案</button>
-            <button class="requirements-close" type="button" data-close-home-requirements aria-label="关闭首页需求说明">×</button>
-          </div>
-        </div>
-        <div class="home-requirements-content" contenteditable="true" spellcheck="false" data-home-requirements-content>首页需求说明
-
-页面概述
-- 首页用于承载 Y12 的首屏内容聚合，集中展示广告、帖子动态、视频推荐和底部功能入口。
-
-核心模块
-- 顶部栏：展示产品 Logo、产品名称、搜索栏、全部分类、APP 下载和登录/个人中心入口。
-- 顶部菜单栏：展示首页、帖子类菜单、视频类菜单、一级菜单 E 下拉和示例菜单横向切换。
-- 首页广告弹窗：用户首次进入首页时展示推荐广告弹窗，广告为 5 行 5 列，包含广告图标和广告名称。
-- 顶部广告栏：展示横向广告卡片，广告名称位于图标下方。
-- 一级菜单 A：展示动态内容卡片，两行五列，卡片包含动态封面、动态标题、发布者、上架时间和动态标签。
-- 推荐视频：固定模块，展示 1 行 5 列视频内容卡片，支持“换一批”。
-- 每日更新：固定模块，展示 1 行 5 列视频内容卡片，支持“换一批”。
-- 一级菜单 B / C / D：展示视频内容卡片，两行五列，右上角提供“查看更多”按钮。
-- 随机视频：展示 1 行 5 列视频内容卡片，支持“换一批”。
-- 底部广告栏：展示深色广告入口卡片。
-- 页脚：展示产品名称、联系客服、官方群组、商务合作入口。
-
-交互规则
-- 搜索框支持历史记录、热门搜索、输入关键词跳转搜索结果页。
-- 点击全部分类进入全部分类页。
-- 登录后顶部入口切换为个人中心，个人中心包含观看历史、我的点赞和退出账号。
-- 点击动态卡片进入动态详情页，点击视频卡片进入视频详情页。
-- 点击“查看更多”跳转对应列表页。
-- 点击“换一批”只刷新当前模块内容。</div>
-        <div class="requirements-status" data-home-requirements-status>文案可直接编辑，点击“保存文案”后会保存在当前浏览器。</div>
-      </section>
-    </div>
-
-    <button class="requirements-float" type="button" data-open-requirements>通用组件说明</button>
+    <button class="requirements-float" type="button" data-open-requirements>需求说明</button>
     <div class="requirements-modal-root" aria-hidden="true">
       <div class="requirements-backdrop" data-close-requirements></div>
       <section class="requirements-modal" role="dialog" aria-modal="true" aria-labelledby="requirementsTitle">
         <div class="requirements-head">
-          <h2 class="requirements-title" id="requirementsTitle">通用组件说明</h2>
+          <h2 class="requirements-title" id="requirementsTitle">需求说明</h2>
           <div class="requirements-actions">
             <button class="requirements-copy" type="button" data-copy-requirements>复制说明</button>
             <button class="requirements-save" type="button" data-save-requirements>保存文案</button>
@@ -2875,109 +2781,6 @@
       })();
 
 
-    </script>
-    <script>
-      (() => {
-        const root = document.querySelector('.home-requirements-modal-root');
-        const openBtn = document.querySelector('[data-open-home-requirements]');
-        const closeBtns = document.querySelectorAll('[data-close-home-requirements]');
-        const saveBtn = document.querySelector('[data-save-home-requirements]');
-        const copyBtn = document.querySelector('[data-copy-home-requirements]');
-        const content = document.querySelector('[data-home-requirements-content]');
-        const status = document.querySelector('[data-home-requirements-status]');
-        if (!root || !openBtn || !content) return;
-
-        const storageKey = 'Y12_HOME_PAGE_REQUIREMENTS';
-        const saved = localStorage.getItem(storageKey);
-        if (saved) content.textContent = saved;
-
-        const setStatus = (message, type) => {
-          if (!status) return;
-          status.textContent = message;
-          status.classList.toggle('is-success', type === 'success');
-          status.classList.toggle('is-error', type === 'error');
-        };
-
-        const closeFloatingLayers = () => {
-          document.querySelector('.searchbox')?.classList.remove('open');
-          document.querySelector('.account-actions')?.classList.remove('open');
-          document.querySelector('.menu-dropdown')?.classList.remove('open');
-          document.querySelector('.requirements-modal-root')?.classList.remove('open');
-        };
-
-        const save = (silent = false) => {
-          try {
-            localStorage.setItem(storageKey, content.innerText.trim());
-            if (!silent) setStatus('首页需求说明已保存。', 'success');
-            return true;
-          } catch (error) {
-            if (!silent) setStatus('保存失败，请检查浏览器本地存储权限。', 'error');
-            return false;
-          }
-        };
-
-        const open = () => {
-          closeFloatingLayers();
-          root.classList.add('open');
-          root.setAttribute('aria-hidden', 'false');
-          document.body.classList.add('requirements-open');
-        };
-
-        const close = () => {
-          save(true);
-          root.classList.remove('open');
-          root.setAttribute('aria-hidden', 'true');
-          document.body.classList.remove('requirements-open');
-        };
-
-        const fallbackCopy = (text) => {
-          const textarea = document.createElement('textarea');
-          textarea.value = text;
-          textarea.setAttribute('readonly', '');
-          textarea.style.position = 'fixed';
-          textarea.style.left = '-9999px';
-          document.body.appendChild(textarea);
-          textarea.select();
-          const ok = document.execCommand('copy');
-          textarea.remove();
-          return ok;
-        };
-
-        const setCopyState = (state) => {
-          if (!copyBtn) return;
-          copyBtn.classList.remove('is-success', 'is-error');
-          if (state === 'success') {
-            copyBtn.textContent = '已复制';
-            copyBtn.classList.add('is-success');
-          } else {
-            copyBtn.textContent = '复制失败';
-            copyBtn.classList.add('is-error');
-          }
-          window.setTimeout(() => {
-            copyBtn.textContent = '复制说明';
-            copyBtn.classList.remove('is-success', 'is-error');
-          }, 1400);
-        };
-
-        openBtn.addEventListener('click', open);
-        closeBtns.forEach((button) => button.addEventListener('click', close));
-        saveBtn?.addEventListener('click', () => save(false));
-        copyBtn?.addEventListener('click', async () => {
-          const text = content.innerText.trim();
-          if (!text) { setCopyState('error'); return; }
-          try {
-            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
-            else if (!fallbackCopy(text)) throw new Error('fallback copy failed');
-            setCopyState('success');
-          } catch (error) {
-            try { setCopyState(fallbackCopy(text) ? 'success' : 'error'); }
-            catch (_) { setCopyState('error'); }
-          }
-        });
-        document.addEventListener('keydown', (event) => {
-          if (event.key === 'Escape' && root.classList.contains('open')) close();
-        });
-      })();
     </script>
     <script src="common-components-requirements.js"></script>
   </body>
