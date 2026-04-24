@@ -914,6 +914,47 @@
         gap: 10px;
       }
 
+      .detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .detail-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--text);
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          border-color 0.2s ease,
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+
+      .detail-action-btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 122, 0, 0.2);
+        box-shadow: 0 12px 24px rgba(23, 32, 51, 0.08);
+      }
+
+      .detail-action-btn.is-liked {
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+        color: #fff;
+        box-shadow: 0 14px 28px rgba(255, 122, 0, 0.22);
+      }
+
       .detail-tag {
         padding: 8px 12px;
         border-radius: 999px;
@@ -1501,6 +1542,16 @@
             <a class="detail-tag" href="search-results.html?q=动态标签B&type=post&sort=latest&page=1">动态标签B</a>
             <a class="detail-tag" href="search-results.html?q=动态标签C&type=post&sort=latest&page=1">动态标签C</a>
           </div>
+          <div class="detail-actions">
+            <button class="detail-action-btn detail-like-btn" type="button">
+              <span>♥</span>
+              <span class="detail-like-text">点赞 3.2k</span>
+            </button>
+            <button class="detail-action-btn detail-share-btn" type="button">
+              <span>↗</span>
+              <span class="detail-share-text">分享动态</span>
+            </button>
+          </div>
         </section>
 
         <section class="detail-card">
@@ -1670,6 +1721,7 @@
               <li>顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。</li>
               <li>内容区顶部展示广告位。</li>
               <li>详情主体展示动态标题、发布者、上架时间、动态标签和正文文案。</li>
+              <li>动态基础信息区增加点赞和分享功能按钮。</li>
               <li>媒体区按顺序展示多张图片，图片宽度一致，比例可为 16:9、9:16、1:1。</li>
               <li>视频播放区域比例为 16:9。</li>
               <li>提供上一篇和下一篇切换按钮。</li>
@@ -1681,6 +1733,7 @@
             <h3>交互规则</h3>
             <ul>
               <li>点击动态标签跳转搜索结果页，并选中帖子分类。</li>
+              <li>点赞按钮支持状态切换，分享按钮支持复制当前页链接。</li>
               <li>评论输入为空时评论按钮置灰，最多输入 50 个字。</li>
             </ul>
           </section>
@@ -1696,6 +1749,7 @@
 - 顶部栏、顶部菜单栏、搜索、登录/个人中心、底部广告栏和页脚保持全站一致。
 - 内容区顶部展示广告位。
 - 详情主体展示动态标题、发布者、上架时间、动态标签和正文文案。
+- 动态基础信息区增加点赞和分享功能按钮。
 - 媒体区按顺序展示多张图片，图片宽度一致，比例可为 16:9、9:16、1:1。
 - 视频播放区域比例为 16:9。
 - 提供上一篇和下一篇切换按钮。
@@ -1704,6 +1758,7 @@
 
 交互规则
 - 点击动态标签跳转搜索结果页，并选中帖子分类。
+- 点赞按钮支持状态切换，分享按钮支持复制当前页链接。
 - 评论输入为空时评论按钮置灰，最多输入 50 个字。</script>
     </div>
 
@@ -2117,6 +2172,39 @@
         commentTextarea.addEventListener("input", renderCount);
         renderCount();
       }
+
+      const detailLikeButton = document.querySelector(".detail-like-btn");
+      const detailLikeText = document.querySelector(".detail-like-text");
+      let detailLiked = false;
+      let detailLikeCount = 3200;
+      const formatDetailLike = (value) =>
+        value >= 1000 ? `${(value / 1000).toFixed(1)}k` : `${value}`;
+
+      detailLikeButton?.addEventListener("click", () => {
+        detailLiked = !detailLiked;
+        detailLikeCount += detailLiked ? 1 : -1;
+        detailLikeButton.classList.toggle("is-liked", detailLiked);
+        if (detailLikeText) {
+          detailLikeText.textContent = `点赞 ${formatDetailLike(detailLikeCount)}`;
+        }
+      });
+
+      const detailShareButton = document.querySelector(".detail-share-btn");
+      const detailShareText = document.querySelector(".detail-share-text");
+
+      detailShareButton?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (detailShareText) {
+            detailShareText.textContent = "链接已复制";
+            setTimeout(() => {
+              detailShareText.textContent = "分享动态";
+            }, 1400);
+          }
+        } catch (error) {
+          window.alert("分享链接复制失败，请手动复制地址栏链接。");
+        }
+      });
 
 
 
